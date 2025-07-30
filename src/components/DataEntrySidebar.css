@@ -1,0 +1,19 @@
+.dataentry-toplink {
+  text-decoration: none;
+  color: #334155;
+  gap: 4px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background-color: #ffffff;
+}
+
+.dataentry-toplink:hover {
+    background-color: #07598500;
+  color: #4c9bc9;
+}
+
+.dataentry-toplink.active {
+  background-color: #bae6fd;
+  color: #075985;
+}

@@ -1,0 +1,14 @@
+.dataentry-layout {
+  display: block;
+  padding: 4px;
+}
+
+.dataentry-main {
+  max-width: 800px;
+  margin: auto;
+}
+
+.dashboard-navbar
+{
+    padding: 15px;
+}
