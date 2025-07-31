@@ -11,23 +11,23 @@ const DataEntrySidebar = ({ activeTab, setActiveTab }) => {
         Add Questions
       </button>
       <button
+        className={`dataentry-toplink ${activeTab === "#notes" ? "active" : ""}`}
+        onClick={() => setActiveTab("#notes")}
+      >
+        Create Question
+      </button>
+      <button
         className={`dataentry-toplink ${activeTab === "#contact" ? "active" : ""}`}
         onClick={() => setActiveTab("#contact")}
       >
         All Questions
       </button>
-      <button
-        className={`dataentry-toplink ${activeTab === "#notes" ? "active" : ""}`}
-        onClick={() => setActiveTab("#notes")}
-      >
-        Create Page
-      </button>
-      <button
+      {/* <button
         className={`dataentry-toplink ${activeTab === "#submit" ? "active" : ""}`}
         onClick={() => setActiveTab("#submit")}
       >
         Submit
-      </button>
+      </button> */}
     </div>
   );
 };
