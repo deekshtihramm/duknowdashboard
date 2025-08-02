@@ -10,6 +10,10 @@ import Dataentry from "./pages/dataentry.js";
 import Sales from "./pages/Sales.js";
 import Reports from "./pages/Reports.js";
 import Settings from "./pages/Settings.js";
+import UserListPage from "./pages/userpages/userlistlpage.js";
+import EmailListPage from './pages/userpages/emailistpage.js';
+
+
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -24,6 +28,8 @@ root.render(
         <Route path="/sales" element={<Sales />} />
         <Route path="/reports" element={<Reports />} />
         <Route path="/settings" element={<Settings />} />
+        <Route path="/users" element={<UserListPage/>}/>
+        <Route path="/emailusers" element={<EmailListPage />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

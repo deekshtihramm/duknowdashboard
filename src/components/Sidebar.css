@@ -1,8 +1,8 @@
 .dashboard-sidebar {
   width: 220px;
   min-height: 100vh;
-  background-color: #f9fafc;
-  border-right: 1px solid #e0e6ed;
+  background-color: #202020;
+  color: #fff;
   padding: 20px 0;
   position: relative;
 }
@@ -15,7 +15,7 @@
 }
 
 .dashboard-menu-item {
-  color: #2f3542;
+  color: #ffffff;
   text-decoration: none;
   padding: 10px 16px;
   border-radius: 6px;
@@ -24,8 +24,7 @@
 }
 
 .dashboard-menu-item:hover {
-  background-color: #e6eef6;
-  color: #1d4ed8;
+  color: #ffffff;
 }
 
 .dashboard-menu-item.active {

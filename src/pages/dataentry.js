@@ -139,8 +139,10 @@ const DataEntry = () => {
     <div className="dashboard-wrapper">
       <div className="dashboard-navbar">
         <div className="dashboard-logo">Duknow Dashboard</div>
+        <button className="dashboard-menu-button" >
+          ☰
+        </button>
       </div>
-
       <div className="dashboard-layout">
         <Sidebar />
 

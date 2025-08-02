@@ -10,7 +10,7 @@ const Sidebar = ({ isOpen }) => {
       <nav className="dashboard-menu">
         <Link className="dashboard-menu-item" to="/dashboard">Overview</Link>
         <Link className="dashboard-menu-item" to="/dataentry">Data Entry</Link>
-        <Link className="dashboard-menu-item" to="/sales">Sales</Link>
+        <Link className="dashboard-menu-item" to="/sales">Community</Link>
         <Link className="dashboard-menu-item" to="/reports">Reports</Link>
         <Link className="dashboard-menu-item" to="/settings">Settings</Link>
       </nav>

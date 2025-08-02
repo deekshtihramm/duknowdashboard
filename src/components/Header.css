@@ -1,0 +1,26 @@
+.dashboard-navbar {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  background-color: #1e1e1e;
+  color: white;
+}
+
+.dashboard-logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  padding-left: 20px;
+}
+
+.dashboard-search {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.menu-toggle {
+  font-size: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}

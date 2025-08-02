@@ -1,12 +1,8 @@
-.tab-content {
-  padding: 20px;
-  background-color: #f9f9f9;
-  border-radius: 10px;
-}
+
 
 .tab-content h3 {
   margin-bottom: 15px;
-  color: #333;
+  color: #ffffff;
 }
 
 .tab-content label {
@@ -18,7 +14,8 @@
   padding: 8px;
   border-radius: 5px;
   border: 1px solid #ccc;
-  background-color: #fff;
+  background-color: #202020;
+  color: #fff;
 }
 
 .tab-content input,
@@ -29,6 +26,7 @@
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 14px;
+  background-color: #202020;
 }
 
 .tab-content textarea {

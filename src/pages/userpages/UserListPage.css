@@ -1,0 +1,21 @@
+.user-list-page {
+  background-color: #000000;
+}
+
+.back-btn {
+  background-color: #000000;
+  color: white;
+  border: none;
+  padding: 0rem 1rem;
+  cursor: pointer;
+}
+
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.user-table th, .user-table td {
+  border: 1px solid #ccc;
+  padding: 8px;
+}
