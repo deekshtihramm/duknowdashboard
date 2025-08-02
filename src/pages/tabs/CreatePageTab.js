@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "./CreatePageTab.css";
 
+const BASE_URL = "https://web.backend.duknow.in"; // ✅ Base URL added
+
 const CreatePageTab = () => {
   const [pageNumber, setPageNumber] = useState("");
   const [title, setTitle] = useState("");
@@ -9,44 +11,37 @@ const CreatePageTab = () => {
   const [categoryQuestions, setCategoryQuestions] = useState([]);
   const [currentQuestionId, setCurrentQuestionId] = useState(null);
   const sampleImages = [
-  "https://via.placeholder.com/100?text=1",
-  "https://via.placeholder.com/100?text=2",
-  "https://via.placeholder.com/100?text=3",
-  "https://via.placeholder.com/100?text=4",
-];
+    "https://via.placeholder.com/100?text=1",
+    "https://via.placeholder.com/100?text=2",
+    "https://via.placeholder.com/100?text=3",
+    "https://via.placeholder.com/100?text=4",
+  ];
 
-
-
-  const [selectedPageCategory, setSelectedPageCategory] = useState(""); // ✅ FIXED
-
+  const [selectedPageCategory, setSelectedPageCategory] = useState("");
   const [titleTelugu, setTitleTelugu] = useState("");
   const [matterTelugu, setMatterTelugu] = useState("");
   const [longmatterTelugu, setLongmatterTelugu] = useState("");
-
   const [titleHindi, setTitleHindi] = useState("");
   const [matterHindi, setMatterHindi] = useState("");
   const [longmatterHindi, setLongmatterHindi] = useState("");
-
   const [imageUrl, setImageUrl] = useState("");
   const [level, setLevel] = useState("simple");
   const [updateField, setUpdateField] = useState("");
 
   const handleImageUrlChange = (e) => {
-  let input = e.target.value;
-  let extractedUrl = input;
+    let input = e.target.value;
+    let extractedUrl = input;
 
-  // If it's a Bing search URL with mediaurl param
-  if (input.includes("mediaurl=")) {
-    const urlParams = new URLSearchParams(input.split("?")[1]);
-    const mediaurl = urlParams.get("mediaurl");
-    if (mediaurl) {
-      extractedUrl = decodeURIComponent(mediaurl);
+    if (input.includes("mediaurl=")) {
+      const urlParams = new URLSearchParams(input.split("?")[1]);
+      const mediaurl = urlParams.get("mediaurl");
+      if (mediaurl) {
+        extractedUrl = decodeURIComponent(mediaurl);
+      }
     }
-  }
 
-  setImageUrl(extractedUrl);
-};
-
+    setImageUrl(extractedUrl);
+  };
 
   const handleSubmit = () => {
     if (!title || !matter || !longmatter || !pageNumber) {
@@ -76,57 +71,55 @@ const CreatePageTab = () => {
   };
 
   useEffect(() => {
-  if (selectedPageCategory) {
-    fetchCategoryQuestions(selectedPageCategory);
-  }
-}, [selectedPageCategory]);
-
-const fetchCategoryQuestions = async (category) => {
-  try {
-    const response = await fetch(`http://localhost:3000/api/randomquestions/random/${category}`);
-    const data = await response.json();
-    const questions = Array.isArray(data)
-      ? data
-      : data.question
-      ? [data]
-      : [];
-
-    setCategoryQuestions(questions);
-
-    // Auto-set first question
-    if (questions.length > 0) {
-      setTitle(questions[0].question);
-      setCurrentQuestionId(questions[0]._id); // 🔽 used for delete
+    if (selectedPageCategory) {
+      fetchCategoryQuestions(selectedPageCategory);
     }
-  } catch (error) {
-    console.error("Fetch failed:", error);
-    setCategoryQuestions([]);
-  }
-};
+  }, [selectedPageCategory]);
 
-const handleDeleteQuestion = async () => {
-  if (!currentQuestionId) return alert("No question to delete.");
-  const confirmDelete = window.confirm("Delete this question?");
-  if (!confirmDelete) return;
+  const fetchCategoryQuestions = async (category) => {
+    try {
+      const response = await fetch(`${BASE_URL}/api/randomquestions/random/${category}`);
+      const data = await response.json();
+      const questions = Array.isArray(data)
+        ? data
+        : data.question
+        ? [data]
+        : [];
 
-  try {
-    const res = await fetch(
-      `http://localhost:3000/api/randomquestions/delete/${currentQuestionId}`,
-      { method: "DELETE" }
-    );
+      setCategoryQuestions(questions);
 
-    if (res.ok) {
-      alert("Deleted successfully.");
-      setTitle(""); // Clear
-      fetchCategoryQuestions(selectedPageCategory); // Fetch new one
-    } else {
-      alert("Delete failed.");
+      if (questions.length > 0) {
+        setTitle(questions[0].question);
+        setCurrentQuestionId(questions[0]._id);
+      }
+    } catch (error) {
+      console.error("Fetch failed:", error);
+      setCategoryQuestions([]);
     }
-  } catch (error) {
-    console.error("Error deleting:", error);
-  }
-};
+  };
 
+  const handleDeleteQuestion = async () => {
+    if (!currentQuestionId) return alert("No question to delete.");
+    const confirmDelete = window.confirm("Delete this question?");
+    if (!confirmDelete) return;
+
+    try {
+      const res = await fetch(
+        `${BASE_URL}/api/randomquestions/delete/${currentQuestionId}`,
+        { method: "DELETE" }
+      );
+
+      if (res.ok) {
+        alert("Deleted successfully.");
+        setTitle("");
+        fetchCategoryQuestions(selectedPageCategory);
+      } else {
+        alert("Delete failed.");
+      }
+    } catch (error) {
+      console.error("Error deleting:", error);
+    }
+  };
 
   return (
     <div className="tab-content">
@@ -157,16 +150,11 @@ const handleDeleteQuestion = async () => {
           <option value="coding">Coding</option>
           <option value="polity">Polity</option>
           <option value="companies">Companies</option>
-          {/* <option value="Science">Science</option>
-          <option value="space">space</option> */}
-
         </select>
       </div>
 
-
-      {/* 🔹 Display Retrieved Questions */}
       {Array.isArray(categoryQuestions) && categoryQuestions.length > 0 && (
-        <div style={{border: "1px solid #ccc", padding: "5px", borderRadius: "5px" }}>
+        <div style={{ border: "1px solid #ccc", padding: "5px", borderRadius: "5px" }}>
           <h4>Retrieved Question ({selectedPageCategory})</h4>
           <ul>
             {categoryQuestions.map((q, index) => (
@@ -178,9 +166,6 @@ const handleDeleteQuestion = async () => {
         </div>
       )}
 
-      {/* Category Selection */}
-
-      {/* english question */}
       <div className="input-row">
         <label className="input-label">Title:</label>
         <input
@@ -197,7 +182,7 @@ const handleDeleteQuestion = async () => {
         <button className="icon-button button delete" onClick={handleDeleteQuestion}>
           🗑️
         </button>
-        
+
         <label>Level: </label>
         <select value={level} onChange={(e) => setLevel(e.target.value)}>
           <option value="simple">Simple</option>
@@ -205,7 +190,6 @@ const handleDeleteQuestion = async () => {
           <option value="pro">Pro</option>
           <option value="pro max">Pro Max</option>
         </select>
-      
       </div>
 
       <div className="translation-row">
@@ -228,132 +212,75 @@ const handleDeleteQuestion = async () => {
         <button className="icon-button button">&#8635;</button>
       </div>
 
-
-
-          <div className="matter-section">
-        {/* English Column */}
+      <div className="matter-section">
         <div className="matter-column">
           <label>Matter:</label>
-          <textarea
-            className="matter-input"
-            value={matter}
-            onChange={(e) => setMatter(e.target.value)}
-            rows={2}
-          />
+          <textarea className="matter-input" value={matter} onChange={(e) => setMatter(e.target.value)} rows={2} />
           <button className="explain-button">AI Explanation</button>
 
           <label>Long Matter:</label>
-          <textarea
-            className="matter-input"
-            value={longmatter}
-            onChange={(e) => setLongmatter(e.target.value)}
-            rows={4}
-          />
+          <textarea className="matter-input" value={longmatter} onChange={(e) => setLongmatter(e.target.value)} rows={4} />
           <button className="explain-button">AI Explanation</button>
         </div>
 
-        {/* Telugu Column */}
         <div className="matter-column">
           <label>Matter (Telugu):</label>
-          <textarea
-            className="matter-input"
-            value={matterTelugu}
-            onChange={(e) => setMatterTelugu(e.target.value)}
-            rows={2}
-          />
+          <textarea className="matter-input" value={matterTelugu} onChange={(e) => setMatterTelugu(e.target.value)} rows={2} />
           <button className="explain-button">AI Explanation</button>
 
           <label>Long Matter (Telugu):</label>
-          <textarea
-            className="matter-input"
-            value={longmatterTelugu}
-            onChange={(e) => setLongmatterTelugu(e.target.value)}
-            rows={4}
-          />
+          <textarea className="matter-input" value={longmatterTelugu} onChange={(e) => setLongmatterTelugu(e.target.value)} rows={4} />
           <button className="explain-button">AI Explanation</button>
         </div>
 
-        {/* Hindi Column */}
         <div className="matter-column">
           <label>Matter (Hindi):</label>
-          <textarea
-            className="matter-input"
-            value={matterHindi}
-            onChange={(e) => setMatterHindi(e.target.value)}
-            rows={2}
-          />
+          <textarea className="matter-input" value={matterHindi} onChange={(e) => setMatterHindi(e.target.value)} rows={2} />
           <button className="explain-button">AI Explanation</button>
 
           <label>Long Matter (Hindi):</label>
-          <textarea
-            className="matter-input"
-            value={longmatterHindi}
-            onChange={(e) => setLongmatterHindi(e.target.value)}
-            rows={4}
-          />
+          <textarea className="matter-input" value={longmatterHindi} onChange={(e) => setLongmatterHindi(e.target.value)} rows={4} />
           <button className="explain-button">AI Explanation</button>
         </div>
       </div>
 
+      <div className="image-section">
+        <div className="image-controls">
+          <button className="ai-button">AI Creation</button>
+          <label>URL:</label>
+          <input type="text" className="image-url-input" placeholder="Enter or paste image URL" value={imageUrl} onChange={handleImageUrlChange} />
+          <label className="upload-button">
+            Select
+            <input
+              type="file"
+              accept="image/*"
+              className="image-upload-input"
+              onChange={(e) => {
+                const file = e.target.files[0];
+                if (file) {
+                  const reader = new FileReader();
+                  reader.onloadend = () => {
+                    setImageUrl(reader.result);
+                  };
+                  reader.readAsDataURL(file);
+                }
+              }}
+            />
+          </label>
+        </div>
 
-      {/* Optional Fields */}
-     <div className="image-section">
-  {/* Top Controls */}
-      <div className="image-controls">
-        <button className="ai-button">AI Creation</button>
-        <label>URL:</label>
-        <input
-          type="text"
-          className="image-url-input"
-          placeholder="Enter or paste image URL"
-          value={imageUrl}
-          onChange={handleImageUrlChange}
-        />
+        <div className="image-frame-grid">
+          {sampleImages.map((img, i) => (
+            <div key={i} className="image-frame-clickable" onClick={() => setImageUrl(img)}>
+              <img src={img} alt={`Sample ${i + 1}`} />
+            </div>
+          ))}
+        </div>
 
-        {/* Upload button styled */}
-        <label className="upload-button">
-          Select
-          <input
-            type="file"
-            accept="image/*"
-            className="image-upload-input"
-            onChange={(e) => {
-              const file = e.target.files[0];
-              if (file) {
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                  setImageUrl(reader.result);
-                };
-                reader.readAsDataURL(file);
-              }
-            }}
-          />
-        </label>
+        <div className="selected-image-preview">
+          {imageUrl && <img src={imageUrl} alt="Selected" className="preview-image" />}
+        </div>
       </div>
-
-
-
-  {/* Clickable Image Frame Grid */}
-  <div className="image-frame-grid">
-    {sampleImages.map((img, i) => (
-      <div
-        key={i}
-        className="image-frame-clickable"
-        onClick={() => setImageUrl(img)}
-      >
-        <img src={img} alt={`Sample ${i + 1}`} />
-      </div>
-    ))}
-  </div>
-
-  {/* Main Preview */}
-  <div className="selected-image-preview">
-    {imageUrl && (
-  <img src={imageUrl} alt="Selected" className="preview-image" />
-)}
-
-  </div>
-</div>
 
       <button onClick={handleSubmit} style={{ padding: "8px 16px", marginTop: "15px" }}>
         Submit Page Data

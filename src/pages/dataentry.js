@@ -7,6 +7,7 @@ import CreatePageTab from "./tabs/CreatePageTab.js";
 import SubmitTab from "./tabs/SubmitTab.js";
 import MockTestQuestion from "./tabs/mocktest.js";
 import "./DataEntry.css";
+import { BASE_URL } from "../config";
 
 const DataEntry = () => {
   const [activeTab, setActiveTab] = useState("#basic-info");
@@ -14,17 +15,12 @@ const DataEntry = () => {
   const [category, setCategory] = useState("general");
 
   const [allQuestions, setAllQuestions] = useState([]);
-
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState("All");
 
-
-
-
-
   const fetchAllQuestions = async () => {
     try {
-      const response = await fetch("http://localhost:3000/api/randomquestions/");
+      const response = await fetch(`${BASE_URL}/api/randomquestions/`);
       const data = await response.json();
       if (response.ok) setAllQuestions(data);
       else alert("Failed to fetch questions");
@@ -33,22 +29,6 @@ const DataEntry = () => {
       alert("Error fetching questions");
     }
   };
-
-  // const fetchCategoryQuestions = async (category) => {
-  //   try {
-  //     const response = await fetch(`http://localhost:3000/api/randomquestions/random/${category}`);
-  //     const data = await response.json();
-  //     const questions = Array.isArray(data)
-  //       ? data
-  //       : data.question
-  //       ? [data]
-  //       : [];
-  //     setCategoryQuestions(questions);
-  //   } catch (error) {
-  //     console.error("Failed to fetch category questions:", error);
-  //     setCategoryQuestions([]);
-  //   }
-  // };
 
   const handleAddQuestion = async () => {
     if (!question.trim()) {
@@ -74,7 +54,7 @@ const DataEntry = () => {
     };
 
     try {
-      const response = await fetch("http://localhost:3000/api/randomquestions/add", {
+      const response = await fetch(`${BASE_URL}/api/randomquestions/add`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(questionPayload),
@@ -97,7 +77,7 @@ const DataEntry = () => {
 
   const handleDelete = async (questionId) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/randomquestions/delete/${questionId}`, {
+      const response = await fetch(`${BASE_URL}/api/randomquestions/delete/${questionId}`, {
         method: "DELETE",
       });
 
@@ -117,12 +97,6 @@ const DataEntry = () => {
     if (activeTab === "#contact") fetchAllQuestions();
   }, [activeTab]);
 
-  // useEffect(() => {
-  //   if (activeTab === "#notes") {
-  //     fetchCategoryQuestions(selectedPageCategory);
-  //   }
-  // }, [selectedPageCategory, activeTab]);
-
   const filteredQuestions = allQuestions
     .filter((q) => filterCategory === "All" || q.category === filterCategory)
     .filter((q) => q.question.toLowerCase().includes(searchTerm.toLowerCase()));
@@ -139,9 +113,7 @@ const DataEntry = () => {
     <div className="dashboard-wrapper">
       <div className="dashboard-navbar">
         <div className="dashboard-logo">Duknow Dashboard</div>
-        <button className="dashboard-menu-button" >
-          ☰
-        </button>
+        <button className="dashboard-menu-button">☰</button>
       </div>
       <div className="dashboard-layout">
         <Sidebar />
@@ -172,10 +144,7 @@ const DataEntry = () => {
               />
             )}
 
-            {activeTab === "#notes" && (
-              <CreatePageTab />
-
-            )}
+            {activeTab === "#notes" && <CreatePageTab />}
 
             {activeTab === "#submit" && <SubmitTab />}
 

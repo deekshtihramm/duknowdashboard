@@ -9,10 +9,13 @@ const AddQuestionsTab = ({
 }) => {
   const [mockJson, setMockJson] = useState("");
 
+  // ✅ Set base URL here
+const baseUrl = "https://web.backend.duknow.in"; // ✅ Your backend base URL
+
   const handleAddMockTest = async () => {
     try {
       const data = JSON.parse(mockJson); // Validate JSON format
-      const res = await fetch("http://localhost:3000/api/mocktest/post", {
+      const res = await fetch(`${baseUrl}/api/mocktest/post`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -64,7 +67,7 @@ const AddQuestionsTab = ({
 
       <h3>Add Mock Test (JSON Format)</h3>
       <textarea
-        placeholder='{
+        placeholder={`{
   "testTitle": "Polity Practice Test",
   "subject": "Polity",
   "questions": [
@@ -79,7 +82,7 @@ const AddQuestionsTab = ({
       "explanation": "Droupadi Murmu became President in 2022."
     }
   ]
-}'
+}`}
         value={mockJson}
         onChange={(e) => setMockJson(e.target.value)}
         rows={12}

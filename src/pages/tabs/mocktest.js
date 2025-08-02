@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 
+const BASE_URL = "https://web.backend.duknow.in"; // ✅ Your backend base URL
+
 const MockTestsTab = () => {
   const [mockTests, setMockTests] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterTitle, setFilterTitle] = useState("All");
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/mocktest/mocktest")
+    fetch(`${BASE_URL}/api/mocktest/mocktest`)
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         return res.json();
