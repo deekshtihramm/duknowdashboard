@@ -4,7 +4,6 @@ import "./Dashboard.css";
 import { useNavigate } from "react-router-dom";
 import Header from "./components/header";
 
-const BASE_URL = "https://web.backend.duknow.in"; // ✅ Your backend base URL
 
 
 import {
@@ -16,6 +15,9 @@ const Dashboard = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const navigate = useNavigate();
+
+  const BASE_URL = "https://web.backend.duknow.in"; // ✅ Your backend base URL
+
 
   // Dashboard metrics (individual variables)
   const [totalQuestions, setTotalQuestions] = useState(0);
