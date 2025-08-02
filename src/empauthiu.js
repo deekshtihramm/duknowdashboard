@@ -1,9 +1,8 @@
-// src/App.js
 import React, { useState } from 'react';
 import './ampauthui.css';
 import { useNavigate } from 'react-router-dom';
 
-function Empauthui() {
+const Empauthui = () => {
   const [view, setView] = useState('login');
   const [formData, setFormData] = useState({
     name: '',
@@ -14,13 +13,18 @@ function Empauthui() {
 
   const navigate = useNavigate();
 
-  const handleChange = e => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const url = view === 'register' ? '/dashboard/register' : '/dashboard/login';
+
+    const url =
+      view === 'register'
+        ? 'https://web.backend.duknow.in/dashboard/register'
+        : 'https://web.backend.duknow.in/dashboard/login';
 
     try {
       const res = await fetch(url, {
@@ -35,11 +39,19 @@ function Empauthui() {
         console.error('Server Error:', data);
         alert(data.message || 'Something went wrong');
       } else {
-        console.log('Success:', data);
         alert(data.message);
 
         if (view === 'login') {
-          navigate('/dashboard'); // 👈 navigate only after successful login
+          navigate('/dashboard'); // Redirect to dashboard after login
+        } else {
+          // Optionally switch to login view after successful registration
+          setView('login');
+          setFormData({
+            name: '',
+            email: '',
+            password: '',
+            role: 'employee'
+          });
         }
       }
     } catch (err) {
@@ -56,20 +68,44 @@ function Empauthui() {
         {view === 'register' && (
           <>
             <label>Name</label>
-            <input type="text" name="name" value={formData.name} onChange={handleChange} required />
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              required
+            />
           </>
         )}
 
         <label>Email</label>
-        <input type="email" name="email" value={formData.email} onChange={handleChange} required />
+        <input
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          required
+        />
 
         <label>Password</label>
-        <input type="password" name="password" value={formData.password} onChange={handleChange} required />
+        <input
+          type="password"
+          name="password"
+          value={formData.password}
+          onChange={handleChange}
+          required
+        />
 
         {view === 'register' && (
           <>
             <label>Role</label>
-            <input type="text" name="role" value={formData.role} onChange={handleChange} required />
+            <input
+              type="text"
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              required
+            />
           </>
         )}
 
@@ -78,13 +114,23 @@ function Empauthui() {
 
       <p>
         {view === 'login' ? (
-          <span>Don't have an account? <button onClick={() => setView('register')}>Register</button></span>
+          <span>
+            Don&apos;t have an account?{' '}
+            <button type="button" onClick={() => setView('register')}>
+              Register
+            </button>
+          </span>
         ) : (
-          <span>Already registered? <button onClick={() => setView('login')}>Login</button></span>
+          <span>
+            Already registered?{' '}
+            <button type="button" onClick={() => setView('login')}>
+              Login
+            </button>
+          </span>
         )}
       </p>
     </div>
   );
-}
+};
 
 export default Empauthui;
