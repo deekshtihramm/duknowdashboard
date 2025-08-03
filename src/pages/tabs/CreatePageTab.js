@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./CreatePageTab.css";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
 
 const BASE_URL = "https://web.backend.duknow.in"; // ✅ Base URL added
 
@@ -16,6 +18,55 @@ const CreatePageTab = () => {
     "https://via.placeholder.com/100?text=3",
     "https://via.placeholder.com/100?text=4",
   ];
+
+
+
+// Gemini setup
+const genAI = new GoogleGenerativeAI(process.env.REACT_APP_GEMINI_API_KEY);
+
+const generateImageFromPrompt = async (prompt) => {
+  const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+  const result = await model.generateContent(prompt);
+  const response = await result.response;
+  return response.text(); // usually returns markdown/image URL or description
+};
+
+const translateText = async (text, targetLang) => {
+  const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+  const result = await model.generateContent(`Translate this to ${targetLang}: ${text}`);
+  const response = await result.response;
+  return response.text();
+};
+
+const handleAIImage = async () => {
+  if (!title) return alert("Enter title for image prompt!");
+  const prompt = `Give me a direct image URL or base64 for this prompt: "${title}"`;
+
+  try {
+    const result = await generateImageFromPrompt(prompt);
+
+    // Try to extract image URL from markdown (if any)
+    const match = result.match(/!\[.*\]\((.*?)\)/); // Markdown image
+    if (match && match[1]) {
+      setImageUrl(match[1]);
+    } else if (result.startsWith("http")) {
+      setImageUrl(result.trim());
+    } else {
+      alert("Image URL not generated. Output:\n" + result);
+    }
+  } catch (err) {
+    console.error("AI Image error:", err);
+    alert("Failed to generate image.");
+  }
+};
+
+
+const handleTranslate = async (text, lang, setter) => {
+  const translated = await translateText(text, lang);
+  setter(translated);
+};
+
+
 
   const [selectedPageCategory, setSelectedPageCategory] = useState("");
   const [titleTelugu, setTitleTelugu] = useState("");
@@ -200,7 +251,7 @@ const CreatePageTab = () => {
           value={titleTelugu}
           onChange={(e) => setTitleTelugu(e.target.value)}
         />
-        <button className="icon-button button ">&#8635;</button>
+        <button onClick={() => handleTranslate(title, "Telugu", setTitleTelugu)} className="icon-button button">&#8635;</button>
 
         <input
           type="text"
@@ -209,7 +260,7 @@ const CreatePageTab = () => {
           value={titleHindi}
           onChange={(e) => setTitleHindi(e.target.value)}
         />
-        <button className="icon-button button">&#8635;</button>
+        <button onClick={() => handleTranslate(title, "Hindi", setTitleHindi)} className="icon-button button">&#8635;</button>
       </div>
 
       <div className="matter-section">
@@ -246,7 +297,7 @@ const CreatePageTab = () => {
 
       <div className="image-section">
         <div className="image-controls">
-          <button className="ai-button">AI Creation</button>
+          <button className="ai-button" onClick={handleAIImage}>AI Creation</button>
           <label>URL:</label>
           <input type="text" className="image-url-input" placeholder="Enter or paste image URL" value={imageUrl} onChange={handleImageUrlChange} />
           <label className="upload-button">
