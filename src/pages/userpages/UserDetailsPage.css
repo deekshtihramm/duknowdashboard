@@ -1,0 +1,19 @@
+.user-details-page{
+    background-color: #0a0a0a;
+}
+.user-details-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  color: #fff;
+
+}
+
+.user-details-table td {
+  padding: 8px;
+  border: 1px solid #444;
+}
+
+.user-details-table tr:nth-child(even) {
+  background-color: #2a2a2a;
+}

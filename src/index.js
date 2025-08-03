@@ -12,6 +12,7 @@ import Reports from "./pages/Reports.js";
 import Settings from "./pages/Settings.js";
 import UserListPage from "./pages/userpages/userlistlpage.js";
 import EmailListPage from './pages/userpages/emailistpage.js';
+import UserDetailPage from './pages/userpages/userdetials.js';
 
 
 
@@ -30,6 +31,7 @@ root.render(
         <Route path="/settings" element={<Settings />} />
         <Route path="/users" element={<UserListPage/>}/>
         <Route path="/emailusers" element={<EmailListPage />} />
+        <Route path='/user-detail' element={<UserDetailPage/>}/>
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

@@ -33,13 +33,14 @@ const UserListPage = () => {
           </thead>
           <tbody>
             {userList.map((user, i) => (
-              <tr key={i}>
+              <tr key={i} onClick={() => navigate(`/user-detail`, { state: { user } })} style={{ cursor: "pointer" }}>
                 <td>{user.name || "—"}</td>
                 <td>{user.email || "—"}</td>
                 <td>{user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "—"}</td>
               </tr>
             ))}
           </tbody>
+
         </table>
       )}
     </div>

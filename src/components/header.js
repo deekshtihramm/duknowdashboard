@@ -5,6 +5,10 @@ import './Header.css'; // Optional: For CSS separation
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
+const refreshDashboard = () => {
+  sessionStorage.clear();
+  window.location.reload();
+};
 
   return (
     <div className="dashboard-navbar">
@@ -24,6 +28,11 @@ const Header = () => {
           }}
         />
       </div>
+
+      <button onClick={refreshDashboard} style={{ marginBottom: "10px" ,borderRadius:"50px"}}>
+        🔄 Refresh Dashboard
+      </button>
+
       <button
         className="menu-toggle"
         onClick={() => setMenuOpen(!menuOpen)}

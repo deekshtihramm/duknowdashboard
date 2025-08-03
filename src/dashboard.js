@@ -39,118 +39,115 @@ const Dashboard = () => {
 
   const COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff8042", "#00C49F", "#8dd1e1"];
 
-  useEffect(() => {
-    // Fetch total question count
-    fetch(`${BASE_URL}/api/randomquestions/count`)
-      .then(res => res.json())
-      .then(data => setTotalQuestions(data.totalQuestions || 0))
-      .catch(console.error);
+  const getSessionOrFetch = async (key, url, setter) => {
+  const cached = sessionStorage.getItem(key);
+  if (cached) {
+    setter(JSON.parse(cached));
+  } else {
+    const res = await fetch(url);
+    const data = await res.json();
+    sessionStorage.setItem(key, JSON.stringify(data));
+    setter(data);
+  }
+};
 
-    // // Email users count
-    // fetch("/api/emailusersearch/user/count")
-    //   .then(res => res.json())
-    //   .then(data => setEmailUsers(data.count || 0))
-    //   .catch(console.error);
 
+ useEffect(() => {
+  // ✅ Total questions
+  getSessionOrFetch("totalQuestions", `${BASE_URL}/api/randomquestions/count`, (data) =>
+    setTotalQuestions(data.totalQuestions || 0)
+  );
 
-    fetch(`${BASE_URL}/api/usersearch/users`)
-  .then(res => res.json())
-  .then(data => {
+  // ✅ Normal users
+  getSessionOrFetch("normalUsers", `${BASE_URL}/api/usersearch/users`, (data) => {
     setNormalUsers(data.count || 0);
     setNormalUserList(data.users || []);
-  })
-  .catch(console.error);
+  });
 
-fetch(`${BASE_URL}/api/usersearch/email/users`)
-  .then(res => res.json())
-  .then(data => {
+  // ✅ Email users
+  getSessionOrFetch("emailUsers", `${BASE_URL}/api/usersearch/email/users`, (data) => {
     setEmailUsers(data.count || 0);
     setEmailUserList(data.users || []);
-  })
-  .catch(console.error);
+  });
 
+  // ✅ Category stats
+  getSessionOrFetch("categoryStats", `${BASE_URL}/api/randomquestions/count/category`, (data) => {
+    const transformed = Object.entries(data).map(([category, count]) => ({ category, count }));
+    setCategoryStats(transformed);
+  });
 
-    // Normal users count
-    fetch(`${BASE_URL}/api/usersearch/users`)
-      .then(res => res.json())
-      .then(data => setNormalUsers(data.count || 0))
-      .catch(console.error);
+  // ✅ Recent questions
+  getSessionOrFetch("recentQuestions", `${BASE_URL}/api/randomquestions`, (data) => {
+    if (Array.isArray(data)) {
+      setRecentQuestions(data.slice(-10).reverse());
+    } else {
+      setRecentQuestions([]);
+    }
+  });
 
-    // Category-wise question stats
-    fetch(`${BASE_URL}/api/randomquestions/count/category`)
-      .then(res => res.json())
-      .then(data => {
-        const transformed = Object.entries(data).map(([category, count]) => ({
-          category,
-          count
+  // ✅ Chart data and summary
+  const getUserChartData = async () => {
+    const cached = sessionStorage.getItem("chartData");
+    if (cached) {
+      const { merged, summary } = JSON.parse(cached);
+      setMergedChartData(merged);
+      setEmailUserSummary(summary);
+      return;
+    }
+
+    try {
+      const [normalRes, emailRes] = await Promise.all([
+        fetch(`${BASE_URL}/api/usersearch/users`),
+        fetch(`${BASE_URL}/api/usersearch/email/users`),
+      ]);
+      const normalData = await normalRes.json();
+      const emailData = await emailRes.json();
+
+      const normalizeData = (users = []) => {
+        const dateMap = {};
+        users.forEach((user) => {
+          const date = new Date(user.createdAt).toISOString().split("T")[0];
+          dateMap[date] = (dateMap[date] || 0) + 1;
+        });
+        return dateMap;
+      };
+
+      const normalMap = normalizeData(normalData.users || []);
+      const emailMap = normalizeData(emailData.users || []);
+      const allDates = new Set([...Object.keys(normalMap), ...Object.keys(emailMap)]);
+
+      const merged = Array.from(allDates)
+        .sort((a, b) => new Date(a) - new Date(b))
+        .map((date) => ({
+          date,
+          normal: normalMap[date] || 0,
+          email: emailMap[date] || 0,
         }));
-        setCategoryStats(transformed);
-      })
-      .catch(console.error);
 
-    // Recent questions (last 10)
-    fetch(`${BASE_URL}/api/randomquestions`)
-      .then(res => res.json())
-      .then(data => {
-        if (Array.isArray(data)) {
-          setRecentQuestions(data.slice(-10).reverse());
-        } else {
-          setRecentQuestions([]);
-        }
-      })
-      .catch(() => setRecentQuestions([]));
+      setMergedChartData(merged);
 
-    // Chart data and email user summary
-    const getUserChartData = async () => {
-      try {
-        const [normalRes, emailRes] = await Promise.all([
-          fetch(`${BASE_URL}/api/usersearch/users`),
-          fetch(`${BASE_URL}/api/usersearch/email/users`)
-        ]);
-        const normalData = await normalRes.json();
-        const emailData = await emailRes.json();
+      const total = Object.values(emailMap).reduce((a, b) => a + b, 0);
+      const dates = Object.keys(emailMap).sort();
+      const diffDays =
+        (new Date(dates[dates.length - 1]) - new Date(dates[0])) / (1000 * 60 * 60 * 24) + 1;
 
-        const normalizeData = (users = []) => {
-          const dateMap = {};
-          users.forEach(user => {
-            const date = new Date(user.createdAt).toISOString().split("T")[0];
-            dateMap[date] = (dateMap[date] || 0) + 1;
-          });
-          return dateMap;
-        };
+      const summary = {
+        total,
+        avgPerDay: (total / diffDays).toFixed(2),
+      };
 
-        const normalMap = normalizeData(normalData.users || []);
-        const emailMap = normalizeData(emailData.users || []);
+      setEmailUserSummary(summary);
+      sessionStorage.setItem("chartData", JSON.stringify({ merged, summary }));
+    } catch (err) {
+      console.error("Chart fetch error:", err);
+    }
+  };
 
-        const allDates = new Set([...Object.keys(normalMap), ...Object.keys(emailMap)]);
+  getUserChartData();
+}, []);
 
-        const merged = Array.from(allDates)
-          .sort((a, b) => new Date(a) - new Date(b))
-          .map(date => ({
-            date,
-            normal: normalMap[date] || 0,
-            email: emailMap[date] || 0
-          }));
 
-        setMergedChartData(merged);
 
-        // Email user summary
-        const total = Object.values(emailMap).reduce((a, b) => a + b, 0);
-        const dates = Object.keys(emailMap).sort();
-        if (dates.length) {
-          const diffDays = (new Date(dates[dates.length - 1]) - new Date(dates[0])) / (1000 * 60 * 60 * 24) + 1;
-          setEmailUserSummary({
-            total,
-            avgPerDay: (total / diffDays).toFixed(2)
-          });
-        }
-      } catch (err) {
-        console.error("Chart fetch error:", err);
-      }
-    };
-
-    getUserChartData();
-  }, []);
 
   // Total users calculated from normal + email
   useEffect(() => {
@@ -180,7 +177,7 @@ fetch(`${BASE_URL}/api/usersearch/email/users`)
               });
             }}
             >
-              <h3>Normal Users</h3>
+              <h3>Total Installed Users</h3>
               <p>{normalUsers}</p>
             </div>
 
@@ -212,8 +209,12 @@ fetch(`${BASE_URL}/api/usersearch/email/users`)
           {/* Charts */}
           <section className="dashboard-charts">
             <div className="dashboard-chart">
-              <h3>User Registrations Over Time</h3>
-              <ResponsiveContainer width="100%" height={300}>
+              <div style={{display:"flex", justifyContent:"space-between",paddingRight:"10px"}}>
+                <h3>User Registrations Over Time</h3>
+                <p style={{paddingRight:"10px",paddingTop:"6px",cursor:"pointer"}}>view &gt;</p>
+              </div>
+          
+              <ResponsiveContainer className="line" width="100%" height={300}>
                 <LineChart data={mergedChartData}>
                   <XAxis dataKey="date" />
                   <YAxis />
@@ -230,7 +231,10 @@ fetch(`${BASE_URL}/api/usersearch/email/users`)
 
             {/* Pie Chart */}
             <div className="dashboard-chart">
-              <h3>Category-wise Question Count</h3>
+              <div style={{display:"flex", justifyContent:"space-between",paddingRight:"10px"}}>
+                <h3>Total unposted Questions: {totalQuestions}</h3>
+                <p style={{cursor:"pointer"}}>view &gt;</p>
+              </div>              
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   <Pie

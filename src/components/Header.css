@@ -15,7 +15,7 @@
 .dashboard-search {
   flex: 1;
   display: flex;
-  justify-content: center;
+  justify-content: end;
 }
 
 .menu-toggle {

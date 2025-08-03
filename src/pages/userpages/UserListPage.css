@@ -1,5 +1,6 @@
 .user-list-page {
-  background-color: #000000;
+  background-color: #0a0a0a;
+  overflow-y: auto;
 }
 
 .back-btn {
