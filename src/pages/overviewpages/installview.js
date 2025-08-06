@@ -1,10 +1,10 @@
 import React from 'react';
-import Header from "../components/header.js";
-import Sidebar from '../components/Sidebar.js';
+import Header from "../../components/header.js";
+import Sidebar from '../../components/Sidebar.js';
 
 
 
-const Reports = () => {
+const Users = () => {
   return (
     <div className="dashboard-wrapper">
       <Header />
@@ -19,4 +19,4 @@ const Reports = () => {
   );
 };
 
-export default Reports;
+export default Users;

@@ -20,6 +20,64 @@ const CreatePageTab = () => {
   ];
 
 
+  // Add this inside the CreatePageTab component
+useEffect(() => {
+ const autoGenerateAll = async () => {
+  if (!title) return;
+
+  try {
+    // Step 1: Generate English content
+    const shortEng = await handleExplain(title, setMatter, "English", "short");
+    const longEng = await handleExplain(title, setLongmatter, "English", "long");
+
+    // Step 2: Translate English content to Telugu & Hindi
+    setTitleTelugu(await translate(title, "Telugu"));
+    setTitleHindi(await translate(title, "Hindi"));
+
+    setMatterTelugu(await translate(shortEng, "Telugu"));
+    setLongmatterTelugu(await translate(longEng, "Telugu"));
+
+    setMatterHindi(await translate(shortEng, "Hindi"));
+    setLongmatterHindi(await translate(longEng, "Hindi"));
+
+    // Step 3: Generate Image
+    await handleAIImage();
+
+  } catch (error) {
+    console.error("Auto generation failed:", error);
+  }
+};
+
+
+  if (title) {
+    autoGenerateAll();
+  }
+}, [title]);
+
+
+// const autoGenerateAll = async () => {
+//   if (!title) return alert("Please enter title!");
+
+//   try {
+//     const shortEng = await handleExplain(title, setMatter, "English", "short");
+//     const longEng = await handleExplain(title, setLongmatter, "English", "long");
+
+//     setTitleTelugu(await translate(title, "Telugu"));
+//     setTitleHindi(await translate(title, "Hindi"));
+
+//     setMatterTelugu(await translate(shortEng, "Telugu"));
+//     setLongmatterTelugu(await translate(longEng, "Telugu"));
+
+//     setMatterHindi(await translate(shortEng, "Hindi"));
+//     setLongmatterHindi(await translate(longEng, "Hindi"));
+
+//     await handleAIImage();
+//   } catch (error) {
+//     console.error("Auto generation failed:", error);
+//   }
+// };
+
+
 
 // Gemini setup
 const genAI = new GoogleGenerativeAI(process.env.REACT_APP_GEMINI_API_KEY);
@@ -31,12 +89,11 @@ const generateImageFromPrompt = async (prompt) => {
   return response.text(); // usually returns markdown/image URL or description
 };
 
-const translateText = async (text, targetLang) => {
-  const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-  const result = await model.generateContent(`Translate this to ${targetLang}: ${text}`);
-  const response = await result.response;
-  return response.text();
+const handleTranslate = async (text, lang, setter) => {
+  const translated = await translate(text, lang);
+  setter(translated);
 };
+
 
 const handleAIImage = async () => {
   if (!title) return alert("Enter title for image prompt!");
@@ -61,10 +118,33 @@ const handleAIImage = async () => {
 };
 
 
-const handleTranslate = async (text, lang, setter) => {
-  const translated = await translateText(text, lang);
-  setter(translated);
+const translate = async (text, language) => {
+  try {
+    const model = genAI.getGenerativeModel({ model: "models/gemini-1.5-pro" }); // Fix here
+    const prompt = `Translate the following to ${language}:\n\n${text}`;
+    const result = await model.generateContent(prompt);
+    return result.response.text();
+  } catch (err) {
+    console.error("Translation error:", err);
+    return "";
+  }
 };
+
+const handleExplain = async (text, setter, language, type) => {
+  try {
+    const model = genAI.getGenerativeModel({ model: "models/gemini-1.5-pro" }); // Fix here
+    const prompt = `${type === "short" ? "Explain briefly" : "Give a detailed explanation"} about ${text} in ${language}`;
+    const result = await model.generateContent(prompt);
+    const content = result.response.text();
+    setter(content);
+    return content;
+  } catch (err) {
+    console.error("handleExplain error:", err);
+    setter("");
+    return "";
+  }
+};
+
 
 
 
@@ -221,7 +301,7 @@ const handleTranslate = async (text, lang, setter) => {
         <label className="input-label">Title:</label>
         <input
           type="text"
-          className="input-field"
+          className="text-feild"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
@@ -265,33 +345,58 @@ const handleTranslate = async (text, lang, setter) => {
 
       <div className="matter-section">
         <div className="matter-column">
-          <label>Matter:</label>
-          <textarea className="matter-input" value={matter} onChange={(e) => setMatter(e.target.value)} rows={2} />
-          <button className="explain-button">AI Explanation</button>
+            <label>Matter:</label>
+            <textarea className="matter-input" value={matter} onChange={(e) => setMatter(e.target.value)} rows={2} />
+            <button
+              onClick={() => handleExplain(title, setMatter, "English", "short")}
+            >
+              AI Explanation (Short)
+            </button>
 
-          <label>Long Matter:</label>
-          <textarea className="matter-input" value={longmatter} onChange={(e) => setLongmatter(e.target.value)} rows={4} />
-          <button className="explain-button">AI Explanation</button>
-        </div>
+            <label>Long Matter:</label>
+            <textarea className="matter-input" value={longmatter} onChange={(e) => setLongmatter(e.target.value)} rows={4} />
+            <button
+              onClick={() => handleExplain(title, setLongmatter, "English", "long")}
+            >
+              AI Explanation (Long)
+            </button>
+          </div>
+
 
         <div className="matter-column">
           <label>Matter (Telugu):</label>
           <textarea className="matter-input" value={matterTelugu} onChange={(e) => setMatterTelugu(e.target.value)} rows={2} />
-          <button className="explain-button">AI Explanation</button>
+          <button
+            onClick={() => handleExplain(matter, setMatterTelugu, "Telugu", "short")}
+          >
+            AI Explanation (Short - Telugu)
+          </button>
 
           <label>Long Matter (Telugu):</label>
           <textarea className="matter-input" value={longmatterTelugu} onChange={(e) => setLongmatterTelugu(e.target.value)} rows={4} />
-          <button className="explain-button">AI Explanation</button>
+          <button
+            onClick={() => handleExplain(matter, setLongmatterTelugu, "Telugu", "long")}
+          >
+            AI Explanation (Long - Telugu)
+          </button>
         </div>
 
         <div className="matter-column">
           <label>Matter (Hindi):</label>
           <textarea className="matter-input" value={matterHindi} onChange={(e) => setMatterHindi(e.target.value)} rows={2} />
-          <button className="explain-button">AI Explanation</button>
+          <button
+            onClick={() => handleExplain(matter, setMatterHindi, "Hindi", "short")}
+          >
+            AI Explanation (Short - Hindi)
+          </button>
 
           <label>Long Matter (Hindi):</label>
           <textarea className="matter-input" value={longmatterHindi} onChange={(e) => setLongmatterHindi(e.target.value)} rows={4} />
-          <button className="explain-button">AI Explanation</button>
+          <button
+            onClick={() => handleExplain(matter, setLongmatterHindi, "Hindi", "long")}
+          >
+            AI Explanation (Long - Hindi)
+          </button>
         </div>
       </div>
 

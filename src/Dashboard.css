@@ -200,6 +200,10 @@ body {
   scrollbar-color: #888 #2a2a2a41;      /* Thumb and track colors for Firefox */
 }
 
+.fact-section{
+  display: flex;
+  gap: 10px;
+}
 /* For Chrome, Edge, Safari */
 .category-list::-webkit-scrollbar {
   width: 6px;

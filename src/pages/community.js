@@ -4,7 +4,7 @@ import Sidebar from '../components/Sidebar.js';
 
 
 
-const Reports = () => {
+const Community = () => {
   return (
     <div className="dashboard-wrapper">
       <Header />
@@ -19,4 +19,4 @@ const Reports = () => {
   );
 };
 
-export default Reports;
+export default Community;

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './Header.css'; // Optional: For CSS separation
+import image from '../images/logoimg.png';
 
 
 const Header = () => {
@@ -12,7 +13,9 @@ const refreshDashboard = () => {
 
   return (
     <div className="dashboard-navbar">
-      <div className="dashboard-logo">Duknow Dashboard</div>
+      <div className="dashboard-logo">
+        <img className='brand-img' src={image}/>
+        Duknow Dashboard</div>
       <div className="dashboard-search">
         <input
           type="text"
