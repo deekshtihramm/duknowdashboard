@@ -26,6 +26,7 @@ const UserListPage = () => {
         <table className="user-table">
           <thead>
             <tr>
+              <th>S.no</th>
               <th>Name</th>
               <th>Email</th>
               <th>Joined</th>
@@ -34,6 +35,7 @@ const UserListPage = () => {
           <tbody>
             {[...userList].reverse().map((user, i) => ( 
              <tr key={i} onClick={() => navigate(`/user-detail`, { state: { user } })} style={{ cursor: "pointer" }}>
+                <td>{i+1}</td>
                 <td>{user.name || "—"}</td>
                 <td>{user.email || "—"}</td>
                 <td>{user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "—"}</td>

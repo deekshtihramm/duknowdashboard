@@ -3,17 +3,15 @@ import Sidebar from "./components/Sidebar";
 import "./Dashboard.css";
 import { useNavigate } from "react-router-dom";
 import Header from "./components/header";
-
-
-
-
 import {
   PieChart, Pie, Cell,
-  LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer
+  LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer,
+  BarChart, Bar , Legend ,CartesianGrid// ✅ Add this
 } from "recharts";
 
 const Dashboard = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [categoryUsage, setCategoryUsage] = useState([]);
 
   const navigate = useNavigate();
 
@@ -30,6 +28,10 @@ const Dashboard = () => {
   const [emailUserList, setEmailUserList] = useState([]);
   const [showUserModal, setShowUserModal] = useState(false);
   const [selectedUserType, setSelectedUserType] = useState("");
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+
 
 
   const [categoryStats, setCategoryStats] = useState([]);
@@ -39,6 +41,13 @@ const Dashboard = () => {
   const [emailUserSummary, setEmailUserSummary] = useState({ total: 0, avgPerDay: 0 });
 
   const COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff8042", "#00C49F", "#8dd1e1"];
+
+  const allowedCategories = [
+  "technology", "space", "sports", "science", "general", "food", "history",
+  "gk", "aptitude", "English", "chemistry", "computer", "ethics", "geography",
+  "polity", "reasoning", "current", "environment", "software", "companies", "coding"
+];
+
 
   const getSessionOrFetch = async (key, url, setter) => {
   const cached = sessionStorage.getItem(key);
@@ -146,6 +155,119 @@ const Dashboard = () => {
 
   getUserChartData();
 }, []);
+
+// useEffect(() => {
+//   const fetchCategoryUsage = async () => {
+//     try {
+//       const res = await fetch(`${BASE_URL}/api/usersearch/users`);
+//       const data = await res.json();
+//       const users = data.users || [];
+
+//       const categoryCount = {};
+
+//       users.forEach(user => {
+//         const pages = user.pageNames || [];
+//         pages.forEach(page => {
+//           const [category] = page.split("-");
+//           if (
+//             category &&
+//             allowedCategories.includes(category.toLowerCase()) &&
+//             !page.toLowerCase().includes("page")
+//           ) {
+//             categoryCount[category] = (categoryCount[category] || 0) + 1;
+//           }
+//         });
+//       });
+
+
+//       const chartData = allowedCategories.map(category => ({
+//         category,
+//         count: categoryCount[category] || 0,
+//       }));
+
+
+//       setCategoryUsage(chartData);
+//     } catch (err) {
+//       console.error("Error fetching category usage:", err);
+//     }
+//   };
+
+//   fetchCategoryUsage();
+// }, []);
+
+useEffect(() => {
+  const fetchData = async () => {
+    setLoading(true); // Start loading
+    try {
+      const res = await fetch("https://web.backend.duknow.in/api/usersearch/users");
+      const data = await res.json();
+
+      const userArray = Array.isArray(data) ? data : data.users;
+      setUsers(userArray);
+
+      const avgData = calculateCategoryAverage(userArray);
+      setCategoryUsage(avgData);
+     console.log("Fetched Users", userArray);
+
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    } finally {
+      setLoading(false); // Stop loading
+    }
+  };
+
+  
+
+  fetchData();
+}, []);
+
+
+
+
+const validCategories = [
+  "technology", "space", "sports", "science", "general", "food", "history",
+  "gk", "aptitude", "English", "chemistry", "computer", "ethics", "geography",
+  "polity", "reasoning", "current", "environment", "software", "companies", "coding"
+];
+
+function calculateCategoryAverage(users) {
+  const categoryCount = {};
+  let userCount = 0;
+
+  users.forEach((user) => {
+    const pageNames = user.pageNames || [];
+
+    if (!Array.isArray(pageNames) || pageNames.length === 0) return;
+
+    userCount++;
+
+    const seenCategories = {};
+
+    pageNames.forEach((page) => {
+      const [category] = page.split("-");
+      if (validCategories.includes(category)) {
+        seenCategories[category] = (seenCategories[category] || 0) + 1;
+      }
+    });
+
+    // Add to total counts
+    Object.entries(seenCategories).forEach(([cat, count]) => {
+      if (!categoryCount[cat]) {
+        categoryCount[cat] = { total: 0 };
+      }
+      categoryCount[cat].total += count;
+    });
+  });
+
+  // Calculate average
+  const chartData = Object.entries(categoryCount).map(([category, data]) => ({
+    category,
+    average: parseFloat((data.total / userCount).toFixed(2)),
+  }));
+
+  console.log(chartData);
+  return chartData;
+}
 
 
 
@@ -300,19 +422,24 @@ const Dashboard = () => {
                 <p style={{paddingRight:"10px",paddingTop:"6px",cursor:"pointer"}} onClick={()=>navigate("/dashboard/view")}>view &gt;</p>
               </div>
           
-              <ResponsiveContainer className="line" width="100%" height={300}>
-                <barChart data={mergedChartData}>
-                  <XAxis dataKey="date" />
-                  <YAxis />
-                  <Tooltip />
-                  <Line type="monotone" dataKey="normal" stroke="#8884d8" name="Normal Users" />
-                  <Line type="monotone" dataKey="email" stroke="#ff8042" name="Email Users" />
-                </barChart>
-              </ResponsiveContainer>
-              <div className="user-summary">
-                <p><strong>Email Users Total:</strong> {emailUserSummary.total}</p>
-                <p><strong>Average per Day:</strong> {emailUserSummary.avgPerDay}</p>
-              </div>
+          {loading ? (
+  <p>Loading data...</p>
+) : categoryUsage.length === 0 ? (
+  <p>No category usage data available.</p>
+) : (
+  <ResponsiveContainer width="100%" height={400} className="line">
+  <BarChart
+    data={categoryUsage} // ✅ data from your state
+    margin={{ top: 20, right: 30, left: 20}}
+  >
+    <XAxis dataKey="category" />  {/* ✅ category will be on X-axis */}
+    <YAxis />
+    <Tooltip />
+    <Legend />
+    <Bar dataKey="average" fill="#8884d8" /> {/* ✅ average count on Y-axis */}
+  </BarChart>
+</ResponsiveContainer>
+)}
             </div>
 
 
