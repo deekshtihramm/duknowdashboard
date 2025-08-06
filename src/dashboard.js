@@ -6,6 +6,7 @@ import Header from "./components/header";
 
 
 
+
 import {
   PieChart, Pie, Cell,
   LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer
@@ -211,7 +212,7 @@ const Dashboard = () => {
             <div className="dashboard-chart">
               <div style={{display:"flex", justifyContent:"space-between",paddingRight:"10px"}}>
                 <h3>User Registrations Over Time</h3>
-                <p style={{paddingRight:"10px",paddingTop:"6px",cursor:"pointer"}}>view &gt;</p>
+                <p style={{paddingRight:"10px",paddingTop:"6px",cursor:"pointer"}} onClick={()=>navigate("/dashboard/view")}>view &gt;</p>
               </div>
           
               <ResponsiveContainer className="line" width="100%" height={300}>
@@ -291,6 +292,30 @@ const Dashboard = () => {
             </div>
           )}
 
+          <div className="fact-section">
+
+          <div className="dashboard-chart">
+              <div style={{display:"flex", justifyContent:"space-between",paddingRight:"10px"}}>
+                <h3>User Registrations Over Time</h3>
+                <p style={{paddingRight:"10px",paddingTop:"6px",cursor:"pointer"}} onClick={()=>navigate("/dashboard/view")}>view &gt;</p>
+              </div>
+          
+              <ResponsiveContainer className="line" width="100%" height={300}>
+                <barChart data={mergedChartData}>
+                  <XAxis dataKey="date" />
+                  <YAxis />
+                  <Tooltip />
+                  <Line type="monotone" dataKey="normal" stroke="#8884d8" name="Normal Users" />
+                  <Line type="monotone" dataKey="email" stroke="#ff8042" name="Email Users" />
+                </barChart>
+              </ResponsiveContainer>
+              <div className="user-summary">
+                <p><strong>Email Users Total:</strong> {emailUserSummary.total}</p>
+                <p><strong>Average per Day:</strong> {emailUserSummary.avgPerDay}</p>
+              </div>
+            </div>
+
+
 
           {/* Recent Questions Table */}
           <section className="dashboard-full-panel">
@@ -309,6 +334,7 @@ const Dashboard = () => {
               </tbody>
             </table>
           </section>
+          </div>
         </main>
       </div>
     </div>

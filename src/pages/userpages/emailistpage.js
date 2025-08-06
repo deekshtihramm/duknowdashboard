@@ -32,8 +32,8 @@ const UserListPage = () => {
             </tr>
           </thead>
           <tbody>
-            {userList.map((user, i) => (
-              <tr key={i} onClick={() => navigate(`/user-detail`, { state: { user } })} style={{ cursor: "pointer" }}>
+            {[...userList].reverse().map((user, i) => ( 
+             <tr key={i} onClick={() => navigate(`/user-detail`, { state: { user } })} style={{ cursor: "pointer" }}>
                 <td>{user.name || "—"}</td>
                 <td>{user.email || "—"}</td>
                 <td>{user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "—"}</td>

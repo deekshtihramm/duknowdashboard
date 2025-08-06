@@ -10,9 +10,9 @@
 
 .dataentry-toplink:hover {
     background-color: #07598500;
-  color: #4c9bc9;
+  color: #c94c4c;
 }
 
 .dataentry-toplink.active {
-  color: #a4d6f1;
+  color: #ed5858;
 }

@@ -23,12 +23,16 @@
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
+.dashboard-menu-icon{
+  padding-right: 10px;
+}
+
 .dashboard-menu-item:hover {
   color: #ffffff;
 }
 
 .dashboard-menu-item.active {
-  background-color: #dbeafe;
-  color: #1d4ed8;
+  background-color: #3c3d3d;
+  color: #eb4d52;
   font-weight: 600;
 }

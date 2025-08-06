@@ -4,8 +4,11 @@ import DataEntrySidebar from "../components/DataEntrySidebar";
 import AddQuestionsTab from "./tabs/AddQuestionsTab";
 import AllQuestionsTab from "./tabs/AllQuestionsTab";
 import CreatePageTab from "./tabs/CreatePageTab.js";
-import SubmitTab from "./tabs/SubmitTab.js";
+import SubmitTab from "./tabs/postquestions.js";
 import MockTestQuestion from "./tabs/mocktest.js";
+import QuestionsList from "./tabs/allQuestions.js";
+import Header from "../components/header.js";
+
 import "./DataEntry.css";
 import { BASE_URL } from "../config";
 
@@ -111,10 +114,7 @@ const DataEntry = () => {
 
   return (
     <div className="dashboard-wrapper">
-      <div className="dashboard-navbar">
-        <div className="dashboard-logo">Duknow Dashboard</div>
-        <button className="dashboard-menu-button">☰</button>
-      </div>
+      <Header />
       <div className="dashboard-layout">
         <Sidebar />
 
@@ -151,6 +151,8 @@ const DataEntry = () => {
             {activeTab === "#mocktest" && (
               <MockTestQuestion activeTab={activeTab} setActiveTab={setActiveTab} />
             )}
+
+            {activeTab === "#allQuestions" && <QuestionsList />}
           </div>
         </main>
       </div>

@@ -1,0 +1,55 @@
+.container {
+  padding: 20px;
+}
+
+.heading {
+  font-size: 22px;
+  margin-bottom: 15px;
+  color: #ffffff;
+}
+
+.select {
+  padding: 8px;
+  margin-bottom: 20px;
+  font-size: 16px;
+  color: #fff;
+}
+
+.loading {
+  font-size: 16px;
+  color: #666;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: rgba(255, 255, 255, 0);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+}
+
+.table th,
+.table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
+}
+
+.table th {
+  font-weight: bold;
+}
+
+.controls {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.search {
+  padding: 0px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  flex-grow: 1;
+  font-size: 14px;
+  color: #fff;
+  height: 15px;
+}

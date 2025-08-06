@@ -21,16 +21,18 @@ const UserListPage = () => {
       <h2>{userType === "normal" ? "Normal Users" : "Email Users"}</h2>
       <table className="user-table">
         <thead>
-          <tr><th>Name</th><th>Email</th><th>Joined</th></tr>
+          <tr><th>S.no</th><th>User ID</th><th>Actice status</th><th>Joined</th></tr>
         </thead>
         <tbody>
-          {userList.map((user, i) => (
-            <tr key={i}>
-              <td>{user.name || "—"}</td>
-              <td>{user.email || "—"}</td>
+          {[...userList].reverse().map((user, i) => (
+            <tr key={i} onClick={() => navigate(`/user-detail`, { state: { user } })} style={{ cursor: "pointer" }}>
+              <td>{i+1}</td>
+              <td>{user.userId || "—"}</td>
+              <td>{user.accountactive ? "Active" : "Inactive"}</td>
               <td>{new Date(user.createdAt).toLocaleDateString()}</td>
             </tr>
           ))}
+
         </tbody>
       </table> 
       </div>

@@ -21,6 +21,7 @@
 .tab-content input,
 .tab-content textarea {
   width: 100%;
+  color: #fff;
   padding: 5px;
   margin-bottom: 7px;
   border: 1px solid #ccc;
@@ -63,12 +64,13 @@
   width: 50%;
 }
 
-.translation-row {
+.translation-row .input-row {
   display: flex;
   align-items: center;
   gap: 12px;
   margin-bottom: 16px;
   flex-wrap: wrap;
+  color: #fff;
 }
 
 .input-label {
@@ -85,6 +87,7 @@
   font-size: 14px;
   transition: border-color 0.3s;
   min-width: 150px;
+  color: #fff;
 }
 
 .title-field:focus {
