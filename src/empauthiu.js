@@ -24,40 +24,62 @@ const Empauthui = () => {
     const url =
       view === 'register'
         ? 'https://web.backend.duknow.in/dashboard/register'
-        : 'https://web.backend.duknow.in/dashboard/login';
+        : 'http://localhost:8000/dashboard/login';
 
-    try {
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      });
+   try {
+  console.log('Sending request to:', url);
+  console.log('Request payload:', formData);
 
-      const data = await res.json();
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(formData)
+  });
 
-      if (!res.ok) {
-        console.error('Server Error:', data);
-        alert(data.message || 'Something went wrong');
+  console.log('Response status:', res.status);
+  console.log('Response headers:', Object.fromEntries(res.headers.entries()));
+
+  const data = await res.json().catch(err => {
+    console.error('Failed to parse JSON response:', err);
+    throw new Error('Invalid JSON response');
+  });
+
+  console.log('Response data:', data);
+
+  if (!res.ok) {
+    console.error('Server Error:', data);
+    alert(data.message || 'Something went wrong');
+  } else {
+    alert(data.message);
+
+    if (view === 'login') {
+      // Store JWT tokens (access & refresh) in localStorage
+      if (data.accessToken && data.refreshToken) {
+        localStorage.setItem('accessToken', data.accessToken);
+        localStorage.setItem('refreshToken', data.refreshToken);
+        console.log('Tokens stored successfully');
       } else {
-        alert(data.message);
-
-        if (view === 'login') {
-          navigate('/dashboard'); // Redirect to dashboard after login
-        } else {
-          // Optionally switch to login view after successful registration
-          setView('login');
-          setFormData({
-            name: '',
-            email: '',
-            password: '',
-            role: 'employee'
-          });
-        }
+        console.warn('Tokens missing in response');
       }
-    } catch (err) {
-      console.error('Network Error:', err);
-      alert('Network error: Could not connect to server');
+
+      navigate('/dashboard'); // Redirect to dashboard after login
+    } else {
+      // Switch to login view after successful registration
+      setView('login');
+      setFormData({
+        name: '',
+        email: '',
+        password: '',
+        role: 'employee'
+      });
+      console.log('Switched to login view after registration');
     }
+  }
+} catch (err) {
+  console.error('Network or unexpected error occurred:', err);
+  alert('Network error: Could not connect to server');
+}
+
   };
 
   return (
@@ -69,6 +91,7 @@ const Empauthui = () => {
           <>
             <label>Name</label>
             <input
+              className='nameinput'
               type="text"
               name="name"
               value={formData.name}
@@ -99,13 +122,14 @@ const Empauthui = () => {
         {view === 'register' && (
           <>
             <label>Role</label>
-            <input
-              type="text"
+            <select
               name="role"
               value={formData.role}
               onChange={handleChange}
-              required
-            />
+              required>
+              <option value="employee">Employee</option>
+              <option value="admin">Admin</option>
+            </select>
           </>
         )}
 

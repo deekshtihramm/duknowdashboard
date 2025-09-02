@@ -16,6 +16,15 @@ import EmailListPage from './pages/userpages/emailistpage.js';
 import UserDetailPage from './pages/userpages/userdetials.js';
 import Users from './pages/overviewpages/installview.js';
 
+//new dashboard
+import Dashboard2 from './newdashboard.js';
+import Totalusers from './newdashboardcomponents/totalusers.js';
+import Activeusers from './newdashboardcomponents/activeusers.js';
+import UserDetails from "./newdashboardcomponents/UserDetails";
+
+
+
+
 
 
 
@@ -36,6 +45,13 @@ root.render(
         <Route path="/emailusers" element={<EmailListPage />} />
         <Route path='/user-detail' element={<UserDetailPage/>}/>
         <Route path='/dashboard/view' element={<Users />} />
+
+        //new dashboard
+        <Route path='/newdashboard' element={<Dashboard2 />} />
+        <Route path='/newdashboard/users' element={<Totalusers />} />
+        <Route path='/newdashboard/active-users' element={<Activeusers />} />
+        <Route path="/newdashboard/userdetails/:id" element={<UserDetails />} />
+        
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

@@ -16,7 +16,7 @@ const refreshDashboard = () => {
       <div className="dashboard-logo">
         <img className='brand-img' src={image}/>
         Duknow Dashboard</div>
-      <div className="dashboard-search">
+      {/* <div className="dashboard-search">
         <input
           type="text"
           placeholder="Search anything..."
@@ -30,7 +30,7 @@ const refreshDashboard = () => {
             color: "#fff",
           }}
         />
-      </div>
+      </div> */}
 
       <button onClick={refreshDashboard} style={{ marginBottom: "10px" ,borderRadius:"50px"}}>
         🔄 Refresh Dashboard
