@@ -37,6 +37,10 @@ label {
   font-weight: 600;
 }
 
+.nameinput{
+  background-color: rgb(255, 255, 255);
+}
+
 input[type="text"],
 input[type="email"],
 input[type="password"] {

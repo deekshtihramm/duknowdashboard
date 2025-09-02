@@ -1,0 +1,31 @@
+.user-details-table-container {
+  overflow-x: auto;
+  margin-top: 20px;
+}
+
+.user-details-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: Arial, sans-serif;
+  color: #000;
+}
+
+.user-details-table th,
+.user-details-table td {
+  border: 1px solid #444444;
+  padding: 12px;
+  text-align: left;
+}
+
+.user-details-table th {
+  background-color: #d4d3d3;
+  font-weight: bold;
+}
+
+.user-details-table tr:nth-child(even) {
+  background-color: #e7e5e599;
+}
+
+.user-details-table tr:hover {
+  background-color: #f1f1f1;
+}
