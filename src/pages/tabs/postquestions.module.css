@@ -1,19 +1,25 @@
 .container {
-  padding: 20px;
-}
-
-.heading {
-  font-size: 22px;
-  margin-bottom: 15px;
-  color: #ffffff;
+  padding: 20px 0px;
+  overflow: hidden; /* dropdown bayatiki expand avvadaniki */
 }
 
 .select {
   padding: 8px;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   font-size: 16px;
-  color: #fff;
+  color: #000000;
+  max-height: 200px;
+  overflow-y: auto;  /* scroll enable */
+  position: relative;
 }
+
+
+.heading {
+  font-size: 22px;
+  margin-bottom: 15px;
+  color: #000000;
+}
+
 
 .loading {
   font-size: 16px;
@@ -24,7 +30,6 @@
   width: 100%;
   border-collapse: collapse;
   background-color: rgba(255, 255, 255, 0);
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
 }
 
 .table th,
@@ -50,6 +55,6 @@
   border-radius: 5px;
   flex-grow: 1;
   font-size: 14px;
-  color: #fff;
+  color: #000000;
   height: 15px;
 }

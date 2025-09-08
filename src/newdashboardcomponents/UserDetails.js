@@ -52,9 +52,9 @@ const UserDetails = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr><td>ID</td><td>{user.id}</td></tr>
+                  <tr><td>ID</td><td>{user._id}</td></tr>
                   <tr><td>User ID</td><td>{user.userId}</td></tr>
-                  <tr><td>Logined Email</td><td>{user.loginedemail}</td></tr>
+                  <tr><td>Logined Email</td><td>{user.email ? user.email : "No"}</td></tr>
                   <tr><td>Selected Language</td><td>{user.selectedLanguage}</td></tr>
                   <tr><td>Selected Topic</td><td>{user.selectedtopic}</td></tr>
                   <tr><td>Account Active</td><td>{user.accountactive ? "Yes" : "No"}</td></tr>
@@ -70,7 +70,7 @@ const UserDetails = () => {
                     <td>Last Opened At</td>
                     <td>
                       {user.lastOpenedAt
-                        ? new Date(user.lastOpenedAt._seconds * 1000).toLocaleString()
+                        ? new Date(user.lastOpenedAt).toLocaleString()
                         : "N/A"}
                     </td>
                   </tr>

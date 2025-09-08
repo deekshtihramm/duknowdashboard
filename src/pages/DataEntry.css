@@ -1,5 +1,4 @@
-/* Layout and Navbar */
-
+/* 
 .dashboard-layout {
   display: flex;
   flex: 1;
@@ -7,16 +6,16 @@
 .dataentry-layout {
   display: flex;
   flex-direction: column;
-}
+} */
 
 /* Tabs */
-.tab-content {
-  background-color: #202020;
+/* .tab-content {
+  background-color: #20202000;
   padding: 0.5rem 2rem;
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(239, 239, 239, 0.1);
-  color: white;
-}
+  color: rgb(0, 0, 0);
+} */
 
 /* Form Inputs */
 /* input[type="text"], select {
@@ -26,50 +25,50 @@
   border: 1px solid #cbd5e1;  
   border-radius: 6px;          
   width: 38%;                  
-  background-color: #202020;  
+  background-color: #ffffff;  
 } */
 
 
 /* Buttons */
-button {
+/* button {
   padding: 8px 16px;
-  background-color: #212121;
+  background-color: #cecece;
   color: white;
   border: none;
   border-radius: 6px;
   cursor: pointer;
   font-weight: 500;
-}
+} */
 
 button:hover {
-  background-color: #4c4c4d;
+  background-color: #5e5eff;
 }
 
 /* Question List */
-.question-list {
+/* .question-list {
   margin-top: 1rem;
-}
-
+} */
+/* 
 .question-list details summary {
   cursor: pointer;
   font-weight: 600;
   font-size: 16px;
-}
-
+} */
+/* 
 .question-list ul {
   padding-left: 1.5rem;
 }
 
 .question-list li {
   margin-bottom: 10px;
-}
+} */
 
 /* Delete Button */
-.delete-button {
+/* .delete-button {
   margin-left: 10px;
   padding: 4px 10px;
   background-color: #ef4444;
-  color: white;
+  color: rgb(0, 0, 0);
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -77,4 +76,8 @@ button:hover {
 
 .delete-button:hover {
   background-color: #dc2626;
+} */
+
+.dataentry-main{
+  padding-left: 15px;
 }

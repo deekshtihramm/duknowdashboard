@@ -1,59 +1,112 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
+import { useNavigate } from "react-router-dom"; // for navigation
 import styles from "./postquestions.module.css";
 
 const Postquestions = () => {
   const [questions, setQuestions] = useState([]);
+  const [counts, setCounts] = useState({});
   const [category, setCategory] = useState("general");
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [hasMore, setHasMore] = useState(true);
+  const skipRef = useRef(0);
+  const limit = 50;
+  const isFetchingRef = useRef(false);
+  const navigate = useNavigate();
 
   const categories = [
     { value: "general", label: "General" },
-    { value: "Computer", label: "Computer" },
-    { value: "Science", label: "Science" },
+    { value: "computer", label: "Computer" },
+    { value: "scientists", label: "Science" },
     { value: "space", label: "Space" },
     { value: "history", label: "History" },
     { value: "sports", label: "Sports" },
-    { value: "Movie", label: "Biography" },
+    { value: "movies", label: "Biography" },
     { value: "gk", label: "Gk" },
-    { value: "reasoning", label: "Reasoning" },
-    { value: "english", label: "English" },
     { value: "environment", label: "Environment" },
     { value: "food", label: "Food" },
     { value: "technology", label: "Technology" },
-    { value: "current", label: "Current Affairs" },
     { value: "geography", label: "Geography" },
     { value: "economy", label: "Economy" },
     { value: "aptitude", label: "Aptitude" },
-    { value: "ethics", label: "Ethics" },
-    { value: "software", label: "Software" },
-    { value: "chemistry", label: "Chemistry" },
-    { value: "coding", label: "Coding" },
-    { value: "polity", label: "Polity" },
-    { value: "companies", label: "Companies" },
+    { value: "coding", label: "Coding" }
   ];
 
-  const fetchCategoryData = async (selectedCategory) => {
+  const fetchCounts = async () => {
+    try {
+      const response = await fetch(`http://localhost:8000/api/realpages/count/getallcount`);
+      const data = await response.json();
+      setCounts(data || {});
+    } catch (err) {
+      console.error("Error fetching counts:", err);
+    }
+  };
+
+  const fetchCategoryData = async (selectedCategory, skipValue = 0, isNewCategory = false) => {
+    if (isFetchingRef.current) return;
+    isFetchingRef.current = true;
     setLoading(true);
     try {
-      const response = await fetch(`https://web.backend.duknow.in/api/${selectedCategory}`);
+      const latestPageNumber = counts[selectedCategory] || 0;
+      const response = await fetch(
+        `http://localhost:8000/api/realpages/questions/all?category=${selectedCategory}&pageNumber=${latestPageNumber}&skip=${skipValue}&limit=${limit}`
+      );
       const data = await response.json();
-      if (Array.isArray(data)) {
-        setQuestions(data);
+
+      if (Array.isArray(data) && data.length > 0) {
+        const sortedData = data.sort((a, b) => b.pageNumber - a.pageNumber);
+        setQuestions(prev => (isNewCategory ? sortedData : [...prev, ...sortedData]));
+        skipRef.current = skipValue + data.length;
       } else {
-        console.warn("Unexpected response format:", data);
-        setQuestions([]);
+        setHasMore(false);
       }
     } catch (err) {
       console.error("Error fetching questions:", err);
-      setQuestions([]);
+    } finally {
+      setLoading(false);
+      isFetchingRef.current = false;
     }
-    setLoading(false);
+  };
+
+  const deleteQuestion = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this question?")) return;
+    try {
+      const response = await fetch(`http://localhost:8000/api/realpages/questions/delete/${id}`, {
+        method: "DELETE",
+      });
+      if (response.ok) {
+        setQuestions(prev => prev.filter(q => q._id !== id));
+      } else {
+        alert("Failed to delete question");
+      }
+    } catch (err) {
+      console.error("Error deleting question:", err);
+    }
   };
 
   useEffect(() => {
-    fetchCategoryData(category);
+    skipRef.current = 0;
+    setQuestions([]);
+    setHasMore(true);
+    fetchCounts();
+    fetchCategoryData(category, 0, true);
   }, [category]);
+
+  const handleScroll = useCallback(() => {
+    if (!hasMore || loading) return;
+    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200) {
+      fetchCategoryData(category, skipRef.current);
+    }
+  }, [hasMore, loading, category]);
+
+  useEffect(() => {
+    const debounceScroll = () => {
+      clearTimeout(window.scrollDebounce);
+      window.scrollDebounce = setTimeout(handleScroll, 150);
+    };
+    window.addEventListener("scroll", debounceScroll);
+    return () => window.removeEventListener("scroll", debounceScroll);
+  }, [handleScroll]);
 
   const filteredQuestions = questions.filter((q) => {
     const lowerSearch = searchTerm.toLowerCase();
@@ -66,21 +119,39 @@ const Postquestions = () => {
 
   return (
     <div className={styles.container}>
-      <h3 className={styles.heading}>Questions - Only Titles</h3>
+      <div style={{ maxWidth: "100%", paddingBottom: "20px", marginTop: "-20px" }}>
+        <h4 style={{ textAlign: "center", fontSize: "1.2rem", color: "#333" }}>All Category Counts</h4>
+        <div style={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "10px",
+          justifyContent: "center"
+        }}>
+          {Object.entries(counts).map(([cat, count]) => (
+            <span key={cat} style={{
+              background: "#fff",
+              padding: "8px 12px",
+              borderRadius: "6px",
+              fontSize: "0.95rem",
+              fontWeight: "500",
+              color: "#444",
+              boxShadow: "0 1px 4px rgba(0, 0, 0, 0.1)",
+              minWidth: "100px",
+              textAlign: "center",
+              flex: "1 1 auto"
+            }}>
+              {cat}: <b>{count}</b>
+            </span>
+          ))}
+        </div>
+      </div>
 
       <div className={styles.controls}>
-        <select
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          className={styles.select}
-        >
+        <select value={category} onChange={(e) => setCategory(e.target.value)} className={styles.select}>
           {categories.map((cat) => (
-            <option key={cat.value} value={cat.value}>
-              {cat.label}
-            </option>
+            <option key={cat.value} value={cat.value}>{cat.label}</option>
           ))}
         </select>
-
         <input
           type="text"
           placeholder="Search by title, page number, or date"
@@ -90,7 +161,7 @@ const Postquestions = () => {
         />
       </div>
 
-      {loading ? (
+      {loading && questions.length === 0 ? (
         <p className={styles.loading}>Loading...</p>
       ) : (
         <table className={styles.table}>
@@ -100,20 +171,38 @@ const Postquestions = () => {
               <th>Title</th>
               <th>Updated At</th>
               <th>Page Number</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {filteredQuestions.map((item, index) => (
-              <tr key={index}>
+              <tr key={index} onClick={() => navigate(`/question/${item._id}`)} style={{ cursor: "pointer" }}>
                 <td>{index + 1}</td>
                 <td>{item.title}</td>
                 <td>{new Date(item.updatedAt).toLocaleDateString()}</td>
                 <td>{item.pageNumber}</td>
+                <td>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); deleteQuestion(item._id); }}
+                    style={{
+                      background: "red",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: "4px",
+                      padding: "4px 8px",
+                      cursor: "pointer"
+                    }}
+                  >
+                    Delete
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       )}
+      {loading && questions.length > 0 && <p className={styles.loading}>Loading more...</p>}
+      {!hasMore && <p style={{ textAlign: "center", margin: "20px 0" }}>No more questions</p>}
     </div>
   );
 };

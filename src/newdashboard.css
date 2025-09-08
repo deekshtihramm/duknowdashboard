@@ -79,3 +79,15 @@
     transition: background 0.3s;
 }
 
+.dashboard-user-stat {
+    display:flex;
+    background: white;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+h3 {
+    margin: 0px;
+    padding-top: 20px;
+}

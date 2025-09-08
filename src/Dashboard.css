@@ -1,6 +1,6 @@
 /* Dashboard.css */
 :root {
-  --color-bg: #f9fafb;
+  --color-bg: #ffffff;
   --color-surface: #202020;
   --color-text: #ffffff;
   --color-muted: #ffffff;
@@ -10,11 +10,7 @@
   /* --color-shadow: rgba(37, 37, 37, 0.05); */
 }
 
-body {
-  margin: 0;
-  background-color: var(--color-bg);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
+
 
 .dashboard-wrapper {
   display: flex;
@@ -119,14 +115,14 @@ body {
   padding: 10px;
 }
 
-
+/* 
 .dashboard-full-panel {
   background-color: var(--color-surface);
   border-radius: 10px;
   padding: 24px;
   box-shadow: 0 4px 8px var(--color-shadow);
   width: 47%;
-}
+} */
 
 /* Responsive layout */
 @media (max-width: 768px) {

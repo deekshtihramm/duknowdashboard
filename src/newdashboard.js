@@ -10,24 +10,80 @@ const NewDashboard = ({ children }) => {
 
     const [totalUsers, setTotalUsers] = useState(0);
     const [loading, setLoading] = useState(true);
-    const storedData = JSON.parse(localStorage.getItem("totalUsers"));
+    const storedData = JSON.parse(sessionStorage.getItem("userCount"));
+    const [recentQuestions, setRecentQuestions] = useState([]);
+    const BASE_URL = "https://web.backend.duknow.in"; // ✅ Your backend base URL
 
-    useEffect(() => {
-    async function fetchUserCount() {
+    const getSessionOrFetch = async (key, url, setter) => {
+      const cached = sessionStorage.getItem(key);
+      if (cached) {
+        setter(JSON.parse(cached));
+      } else {
+        const res = await fetch(url);
+        const data = await res.json();
+        sessionStorage.setItem(key, JSON.stringify(data));
+        setter(data);
+      }
+    };
+
+
+    // useEffect(() => {
+    //   async function fetchUserCount() {
+    //     try {
+    //       const response = await fetch("http://localhost:8000/api/normaluser/alluserscount");
+    //       const data = await response.json();
+    //       sessionStorage.setItem("totalUsers", JSON.stringify(data || 0));
+    //       setLoading(false);
+    //       setTotalUsers(data.usercount || 0);
+    //     } catch (error) {
+    //       console.error("Error fetching user count:", error);
+    //     }
+    //   }
+    //   fetchUserCount();
+    // }, []);
+
+  // Fetch total unposted questions from API and set state
+  const [totalunPostedQuestions, setTotalunPostedQuestions] = useState(0);
+
+
+  useEffect(() => {
+    async function fetchPostedunQuestionsCount() {
       try {
-        const response = await fetch("http://localhost:8000/api/dashboard/user/count");
+        const response = await fetch("http://localhost:8000/api/demo/allunpostedquestionscount");
         const data = await response.json();
-        localStorage.setItem("totalUsers", JSON.stringify(data));
-        setLoading(false);
-        setTotalUsers(data.totalUsers || 0); // Adjust based on API response
+        // Sum all category counts to get total unposted questions
+        const total =
+          data
+            ? Object.values(data).reduce((sum, val) => sum + Number(val), 0)
+            : 0;
+        setTotalunPostedQuestions(total);
       } catch (error) {
-        console.error("Error fetching user count:", error);
+        console.error("Error fetching unposted questions count:", error);
       }
     }
-    fetchUserCount();
+    fetchPostedunQuestionsCount();
   }, []);
-
   
+
+  // Fetch total posted questions from API and set state
+  const [totalPostedQuestions, setTotalPostedQuestions] = useState(0);
+  useEffect(() => {
+    async function fetchPostedQuestionsCount() {
+      try {
+        const response = await fetch("http://localhost:8000/api/realpages/count/getallcount");
+        const data = await response.json();
+        // Sum all category counts to get total posted questions
+        const total =
+          data
+            ? Object.values(data).reduce((sum, val) => sum + Number(val), 0)
+            : 0;
+        setTotalPostedQuestions(total);
+      } catch (error) {
+        console.error("Error fetching posted questions count:", error);
+      }
+    }
+    fetchPostedQuestionsCount();
+  }, []);
   const cardStyle = {
     width: "200px",
     padding: "10px",
@@ -56,6 +112,18 @@ const NewDashboard = ({ children }) => {
     margin: "0",
   };
 
+  useEffect(() => {
+   // ✅ Recent questions
+    getSessionOrFetch("recentQuestions", `${BASE_URL}/api/randomquestions`, (data) => {
+      if (Array.isArray(data)) {
+        setRecentQuestions(data.slice(-10).reverse());
+      } else {
+        setRecentQuestions([]);
+      }
+    });
+  }, []);
+
+
     return (
         <div className="new-dashboard-container">
             <NewHeader />
@@ -65,42 +133,53 @@ const NewDashboard = ({ children }) => {
                     <section className="dashboard-overview">
                         <h2>Overview</h2>
                         <div className="metrics-grid">
-  <div style={cardStyle} onClick={() => window.location.href = '/newdashboard/users'}>
-      <div style={titleStyle}>Total Users</div>
-      <div style={numberStyle}>
-        {loading ? "Loading..." : (storedData.totalUsers !== null ? storedData.totalUsers : "N/A")}
-      </div>
-    </div>
- <div style={cardStyle} onClick={() => window.location.href = '/newdashboard/active-users'}>
-      <div style={titleStyle}>Active Users</div>
-      <div style={numberStyle}>
-        {totalUsers !== null ? "-" : "Loading..."}
-      </div>
-    </div>                 
- <div style={cardStyle}>
-      <div style={titleStyle}>Active Users</div>
-      <div style={numberStyle}>
-        {totalUsers !== null ? "-" : "Loading..."}
-      </div>
-    </div>  
- <div style={cardStyle}>
-      <div style={titleStyle}>Active Users</div>
-      <div style={numberStyle}>
-        {totalUsers !== null ? "-" : "Loading..."}
-      </div>
-    </div>  
-     <div style={cardStyle}>
-      <div style={titleStyle}>Active Users</div>
-      <div style={numberStyle}>
-        {totalUsers !== null ? "-" : "Loading..."}
-      </div>
-    </div>  
+                            <div style={cardStyle} onClick={() => window.location.href = '/newdashboard/users'}>
+                                <div style={titleStyle}>Total Users</div>
+                                <div style={numberStyle}>
+                                  {loading ? "..." : (storedData.usercount !== null ? storedData.totalUsers : "N/A")}
+                                </div>
+                              </div>
+                          <div style={cardStyle} onClick={() => window.location.href = '/newdashboard/active-users'}>
+                                <div style={titleStyle}>Active Users</div>
+                                <div style={numberStyle}>
+                                  {totalUsers !== null ? "-" : "Loading..."}
+                                </div>
+                              </div>                 
+                          <div style={cardStyle} onClick={() => window.location.href = '/newdashboard/total-questions'}>
+                                <div style={titleStyle}>Total posted Questions</div>
+                                <div style={numberStyle}>
+                                  {totalPostedQuestions !== null ? totalPostedQuestions : "Loading..."}
+                                </div>
+                              </div>  
+                          <div style={cardStyle} onClick={() => window.location.href = '/newdashboard/total-u-questions'}>
+                                <div style={titleStyle}>Total unposted Questions</div>
+                                <div style={numberStyle}>
+                                  {totalunPostedQuestions !== null ? totalunPostedQuestions : "Loading..."}
+                                </div>
+                              </div>  
+                              <div style={cardStyle} onClick={() => window.location.href = '/newdashboard/active-users'}>
+                                <div style={titleStyle}>Active Users</div>
+                                <div style={numberStyle}>
+                                  {totalUsers !== null ? "-" : "Loading..."}
+                                </div>
+                              </div>  
                             </div>
                     </section>
-                    <section className="dashboard-user-stats">
-        <h2>User Signup Chart</h2>
-        <UserSignupChart />
-      </section>
+                    <section className="dashboard-user-stat">
+                      <div style={{marginLeft: "20px", height: "45%", width: "50%", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center"}}>
+                        <UserSignupChart />
+                      </div>
+                      <div>
+                        {/* <UserSignupChart /> */}
+                      </div>
+                    </section>
+
+
+                    <section className="dashboard-analytics">
+                        <h2>Analytics</h2>
+                        <div className="chart-placeholder">[User Growth Chart]</div>
+                        <div className="chart-placeholder">[Questions by Category]</div>
+                    </section>
 
                     <section className="dashboard-recent">
                         <h2>Recent Activity</h2>
@@ -111,18 +190,24 @@ const NewDashboard = ({ children }) => {
                         </ul>
                     </section>
 
-                    <section className="dashboard-analytics">
-                        <h2>Analytics</h2>
-                        <div className="chart-placeholder">[User Growth Chart]</div>
-                        <div className="chart-placeholder">[Questions by Category]</div>
+                    {/* Recent Questions Table */}
+                    <section className="dashboard-recent">
+                      <h3>Recent Questions</h3>
+                      <table className="dashboard-table">
+                        <thead>
+                          <tr><th>Question</th><th>Category</th></tr>
+                        </thead>
+                        <tbody>
+                          {recentQuestions.map((q, i) => (
+                            <tr key={i}>
+                              <td>{q.question}</td>
+                              <td>{q.category}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
                     </section>
-
-                    <section className="dashboard-controls">
-                        <h2>Quick Actions</h2>
-                        <button>Add Question</button>
-                        <button>Add Mock Test</button>
-                        <button>Manage Users</button>
-                    </section>
+                   
 
                     {children}
                 </main>
@@ -130,4 +215,5 @@ const NewDashboard = ({ children }) => {
         </div>
     );
 };
+
 export default NewDashboard;

@@ -114,46 +114,11 @@ const DataEntry = () => {
 
   return (
     <div className="dashboard-wrapper">
-      <Header />
       <div className="dashboard-layout">
-        <Sidebar />
 
         <main className="dashboard-content dataentry-layout">
-          <DataEntrySidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 
-          <div className="dataentry-main">
-            {activeTab === "#basic-info" && (
-              <AddQuestionsTab
-                question={question}
-                setQuestion={setQuestion}
-                category={category}
-                setCategory={setCategory}
-                handleAddQuestion={handleAddQuestion}
-              />
-            )}
-
-            {activeTab === "#contact" && (
-              <AllQuestionsTab
-                groupedQuestions={groupedQuestions}
-                uniqueCategories={uniqueCategories}
-                searchTerm={searchTerm}
-                setSearchTerm={setSearchTerm}
-                filterCategory={filterCategory}
-                setFilterCategory={setFilterCategory}
-                handleDelete={handleDelete}
-              />
-            )}
-
-            {activeTab === "#notes" && <CreatePageTab />}
-
-            {activeTab === "#submit" && <SubmitTab />}
-
-            {activeTab === "#mocktest" && (
-              <MockTestQuestion activeTab={activeTab} setActiveTab={setActiveTab} />
-            )}
-
-            {activeTab === "#allQuestions" && <QuestionsList />}
-          </div>
+          
         </main>
       </div>
     </div>

@@ -65,7 +65,7 @@ const baseUrl = "https://web.backend.duknow.in"; // ✅ Your backend base URL
 
       <hr />
 
-      <h3>Add Mock Test (JSON Format)</h3>
+      <h3>Add Mock Test Questions (JSON Format)</h3>
       <textarea
         placeholder={`{
   "testTitle": "Polity Practice Test",

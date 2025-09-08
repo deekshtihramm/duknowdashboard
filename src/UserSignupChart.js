@@ -81,16 +81,24 @@ const UserSignupChart = () => {
 
   if (!chartData) return <p>Loading chart...</p>;
 
+  const buttonStyle = {
+    marginRight: "10px",
+    padding: "8px 16px",
+    border: "2px solid #0099ff",
+    borderRadius: "4px",
+    background: "#ffffffff",
+    color: "#0099ff",
+  }
   return (
-    <div style={{ width: "100%", maxWidth: "900px", margin: "0 auto" }}>
+    <div style={{ width: "100%", maxWidth: "1000%", margin: "0 auto" }}>
       <h3>User Signups</h3>
 
       {/* Timeframe Selector */}
-      <div style={{ marginBottom: "20px" }}>
-        <button onClick={() => setTimeframe("7")}>Last 7 Days</button>
-        <button onClick={() => setTimeframe("30")}>Last 30 Days</button>
-        <button onClick={() => setTimeframe("365")}>Last 1 Year</button>
-        <button onClick={() => setTimeframe("all")}>All Time</button>
+      <div style={{ marginBottom: "10px" }}>
+        <button style={buttonStyle} onClick={() => setTimeframe("7")}>Last 7 Days</button>
+        <button style={buttonStyle} onClick={() => setTimeframe("30")}>Last 30 Days</button>
+        <button style={buttonStyle} onClick={() => setTimeframe("365")}>Last 1 Year</button>
+        <button style={buttonStyle} onClick={() => setTimeframe("all")}>All Time</button>
       </div>
 
       <Line

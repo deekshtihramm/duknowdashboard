@@ -10,7 +10,7 @@ const Sidebar = ({isCollapsed,onToggle}) => {
   const menuItems = [
     { name: "Overview", icon: <MdOutlineDashboard />, color: "#4CAF50", path: "/newdashboard/" },
     { name: "Analytics", icon: <FaChartLine />, color: "#E91E63", path: "/newanalytics/" },
-    { name: "Data Entry", icon: <FaKeyboard />, color: "#FF9800", path: "/dataentry/" },
+    { name: "Data Entry", icon: <FaKeyboard />, color: "#FF9800", path: "/newdataentry/" },
     { name: "Community", icon: <FaUsers />, color: "#9C27B0", path: "/newcommunity/" },
     { name: "Reports", icon: <MdOutlineReport />, color: "#F44336", path: "/newreports/" },
     { name: "Settings", icon: <FaCog />, color: "#03A9F4", path: "/newsettings/" },

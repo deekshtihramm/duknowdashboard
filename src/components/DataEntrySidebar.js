@@ -40,12 +40,12 @@ const DataEntrySidebar = ({ activeTab, setActiveTab }) => {
       >
         All Questions
       </button>
-      <button
+      {/* <button
         className={`dataentry-toplink ${activeTab === "#modifyQuestions" ? "active" : ""}`}
         onClick={() => setActiveTab("#modifyQuestions")}
       >
         Modify Questions
-      </button>
+      </button> */}
     </div>
   );
 };

@@ -18,7 +18,8 @@ const UserDetails = () => {
           className={`new-dashboard-main ${isCollapsed ? "collapsed" : ""}`}
           style={{ flex: 1, padding: "20px" }}
         >
-          <h2>Active users Details</h2>
+          <h2>Total unposted Details</h2>
+         
         </main>
       </div>
     </div>

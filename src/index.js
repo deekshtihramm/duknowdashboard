@@ -21,11 +21,10 @@ import Dashboard2 from './newdashboard.js';
 import Totalusers from './newdashboardcomponents/totalusers.js';
 import Activeusers from './newdashboardcomponents/activeusers.js';
 import UserDetails from "./newdashboardcomponents/UserDetails";
-
-
-
-
-
+import Totaluplodedquestions from './newdashboardcomponents/totaluplodedquestions.js';
+import Totaluquestions from './newdashboardcomponents/totaluquestions.js';
+import DataEntry2 from './newdashboardcomponents/dataentry2.js';
+import TestingImage from './newdashboardcomponents/testingimage.js';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -34,6 +33,7 @@ root.render(
   <React.StrictMode>
     <BrowserRouter>
       <Routes>
+
         <Route path="/" element={<Empauthui />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/dataentry" element={<Dataentry />} />
@@ -51,7 +51,12 @@ root.render(
         <Route path='/newdashboard/users' element={<Totalusers />} />
         <Route path='/newdashboard/active-users' element={<Activeusers />} />
         <Route path="/newdashboard/userdetails/:id" element={<UserDetails />} />
-        
+        <Route path='/newdashboard/total-questions' element={<Totaluplodedquestions />} />
+        <Route path='/newdashboard/total-u-questions' element={<Totaluquestions />} />
+        <Route path='/newdataentry' element={<DataEntry2 />} />
+        <Route path="*" element={<h1> 404 Page not found</h1>} />
+        <Route path='/image-generator' element={<TestingImage />} />
+
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

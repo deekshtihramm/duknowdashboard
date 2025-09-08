@@ -10,7 +10,7 @@ const Totalusers = () => {
   const [users, setUsers] = useState([]);
   const [userStats, setUserStats] = useState(null);
   const [loading, setLoading] = useState(true);
-  const storedData = JSON.parse(localStorage.getItem("totalUsers"));
+  const storedData = JSON.parse(sessionStorage.getItem("userCount"));
   const navigate = useNavigate();
 
 
@@ -37,6 +37,32 @@ const Totalusers = () => {
 
   fetchData();
 }, []);
+
+
+  useEffect(() => {
+    const fetchUserCount = async () => {
+      try {
+        const res = await fetch("http://localhost:8000/api/dashboard/user/count");
+        const data = await res.json();
+
+        // Store in sessionStorage
+        sessionStorage.setItem("userCount", JSON.stringify(data));
+
+        // Update state
+        setUserStats(data);
+      } catch (err) {
+        console.error("Failed to fetch user count:", err);
+      }
+    };
+
+    // Check if already stored in sessionStorage
+    const storedData = sessionStorage.getItem("userCount");
+    if (storedData) {
+      setUserStats(JSON.parse(storedData));
+    } else {
+      fetchUserCount();
+    }
+  }, []);
 
   return (
     <div className="total-users-page">
