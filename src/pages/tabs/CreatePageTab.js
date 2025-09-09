@@ -9,6 +9,7 @@ import getCroppedImg from "../../utility/cropImage";
 
 
 const GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/";
+
 const API_KEY = process.env.REACT_APP_GEMINI_API_KEY;
 
 
@@ -169,6 +170,7 @@ const handleAIImage = async () => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body)
+
     });
 
     const data = await response.json();
