@@ -158,7 +158,7 @@ const handleTranslate = async (text, lang, setter,content) => {
 const BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict";
 
 const handleAIImage = async () => {
-  setLoading(prev => ({ ...prev, image: true }));
+  setLoading(prev => ({ prev, image: true }));
   const body = {
     instances: [{ prompt: `Create a high-quality image of: ${title} sharp and clean without text` }],
     parameters: { sampleCount: 4 }
@@ -526,7 +526,6 @@ const handleSubmit = async () => {
   }
 };
 
-
 const getCroppedImage = (imageSrc, crop) => {
   return new Promise((resolve, reject) => {
     const image = new Image();
@@ -648,12 +647,6 @@ useEffect(() => {
   fetchImages();
 }, [title, includeCelebs]);
 
-
-
-
-//fetch images from googel based on the title
-// Add this inside CreatePageTab, below your other state variables
-
 // Unsplash API
 const UNSPLASH_ACCESS_KEY = "y94_AOhsoxMo6A8JIq6hGPgGhxHR-nEuVHT9FBWVa2E";
 
@@ -686,15 +679,11 @@ useEffect(() => {
   fetchImages();
 }, [title]);
 
-
-
-
   useEffect(() => {
     if (selectedPageCategory) {
       fetchCategoryQuestions(selectedPageCategory);
     }
   }, [selectedPageCategory]);
-
 
   //fetching questions from mongodb
   const fetchCategoryQuestions = async (category) => {
@@ -753,7 +742,6 @@ useEffect(() => {
       console.error("Error deleting:", error);
     }
   };
-
 
   const prompts = [
     "explain more",
@@ -1136,12 +1124,6 @@ return (
     </a>
   ))}
 </div>
-
-
-
-
-
-
 
   <div className="selected-image-preview">
     {imageUrl && <img src={imageUrl} alt="Selected" className="preview-image" />}
