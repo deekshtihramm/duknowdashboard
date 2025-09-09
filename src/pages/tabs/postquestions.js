@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom"; // for navigation
 import styles from "./postquestions.module.css";
 
+
 const Postquestions = () => {
   const [questions, setQuestions] = useState([]);
   const [counts, setCounts] = useState({});
@@ -71,7 +72,7 @@ const Postquestions = () => {
   const deleteQuestion = async (id) => {
     if (!window.confirm("Are you sure you want to delete this question?")) return;
     try {
-      const response = await fetch(`http://localhost:8000/api/realpages/questions/delete/${id}`, {
+      const response = await fetch(`http://localhost:8000/api/realpages/${category}/${id}`, {
         method: "DELETE",
       });
       if (response.ok) {
@@ -83,6 +84,22 @@ const Postquestions = () => {
       console.error("Error deleting question:", err);
     }
   };
+
+  const fetchMongoPage = async (category, pageNumber) => {
+  try {
+    const response = await fetch(`http://localhost:8000/api/realpages/mongo/${category}/pagenumber/${pageNumber}`);
+    if (!response.ok) {
+      throw new Error("Page not found in MongoDB");
+    }
+    const data = await response.json();
+    console.log("MongoDB page data:", data);
+    return data;
+  } catch (err) {
+    console.error("Error fetching MongoDB page:", err);
+    return null;
+  }
+};
+
 
   useEffect(() => {
     skipRef.current = 0;
@@ -175,30 +192,43 @@ const Postquestions = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredQuestions.map((item, index) => (
-              <tr key={index} onClick={() => navigate(`/question/${item._id}`)} style={{ cursor: "pointer" }}>
-                <td>{index + 1}</td>
-                <td>{item.title}</td>
-                <td>{new Date(item.updatedAt).toLocaleDateString()}</td>
-                <td>{item.pageNumber}</td>
-                <td>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); deleteQuestion(item._id); }}
-                    style={{
-                      background: "red",
-                      color: "#fff",
-                      border: "none",
-                      borderRadius: "4px",
-                      padding: "4px 8px",
-                      cursor: "pointer"
-                    }}
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
+  {filteredQuestions.map((item, index) => (
+    <tr
+      key={index}
+      onClick={async () => {
+        const mongoData = await fetchMongoPage(category, item.pageNumber);
+        if (mongoData) {
+          // Navigate to a detail page and pass the data if you want
+          navigate(`/question/${item._id}`, { state: { mongoData } });
+        } else {
+          alert("Page not found in MongoDB");
+        }
+      }}
+      style={{ cursor: "pointer" }}
+    >
+      <td>{index + 1}</td>
+      <td>{item.title}</td>
+      <td>{new Date(item.updatedAt).toLocaleDateString()}</td>
+      <td>{item.pageNumber}</td>
+      <td>
+        <button
+          onClick={(e) => { e.stopPropagation(); deleteQuestion(item._id); }}
+          style={{
+            background: "red",
+            color: "#fff",
+            border: "none",
+            borderRadius: "4px",
+            padding: "4px 8px",
+            cursor: "pointer"
+          }}
+        >
+          Delete
+        </button>
+      </td>
+    </tr>
+  ))}
+</tbody>
+
         </table>
       )}
       {loading && questions.length > 0 && <p className={styles.loading}>Loading more...</p>}

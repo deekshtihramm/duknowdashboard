@@ -25,7 +25,8 @@ import Totaluplodedquestions from './newdashboardcomponents/totaluplodedquestion
 import Totaluquestions from './newdashboardcomponents/totaluquestions.js';
 import DataEntry2 from './newdashboardcomponents/dataentry2.js';
 import TestingImage from './newdashboardcomponents/testingimage.js';
-
+import Login from './newdashboardcomponents/login.js';
+import Postquestionsdetails from './newdashboardcomponents/postedquestiondetails.js';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -34,7 +35,7 @@ root.render(
     <BrowserRouter>
       <Routes>
 
-        <Route path="/" element={<Empauthui />} />
+        <Route path="/login2" element={<Empauthui />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/dataentry" element={<Dataentry />} />
         <Route path="/community" element={<Community />} />
@@ -56,6 +57,8 @@ root.render(
         <Route path='/newdataentry' element={<DataEntry2 />} />
         <Route path="*" element={<h1> 404 Page not found</h1>} />
         <Route path='/image-generator' element={<TestingImage />} />
+        <Route path='/' element={<Login />}/>
+        <Route path='/question/:id' element={<Postquestionsdetails/>}/>
 
       </Routes>
     </BrowserRouter>
