@@ -1,4 +1,4 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 import NewHeader from "./newHeader";
 import NewSidebar from "./newSidebar";
@@ -6,6 +6,7 @@ import "./UserDetails.css";
 
 const QuestionDetail = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const mongoData = location.state?.mongoData;
   const [isCollapsed, setIsCollapsed] = useState(true);
 
@@ -14,7 +15,7 @@ const QuestionDetail = () => {
   const fieldStyle = { padding: "10px 12px", border: "1px solid #eee", verticalAlign: "top" };
   const labelStyle = { fontWeight: "600", width: "180px", background: "#f7f7f7" };
 
-  const infoPairs = [
+  const mainInfoPairs = [
     ["Category", mongoData.category],
     ["Page Number", mongoData.pageNumber],
     ["Place", mongoData.place],
@@ -24,6 +25,9 @@ const QuestionDetail = () => {
     ["Updated At", new Date(mongoData.updatedAt).toLocaleString()],
     ["Title (Hindi)", mongoData.titleHindi],
     ["Title (Telugu)", mongoData.titleTelugu],
+  ];
+
+  const longInfoPairs = [
     ["Matter", mongoData.matter],
     ["Long Matter", mongoData.longmatter],
     ["Matter (Hindi)", mongoData.matterHindi],
@@ -36,6 +40,10 @@ const QuestionDetail = () => {
       </ul>
     ) : "No comments"]
   ];
+
+  const handleEdit = () => {
+    navigate("/newdataentry", { state: { mongoData } });
+  };
 
   return (
     <div className="user-details">
@@ -62,12 +70,29 @@ const QuestionDetail = () => {
               </div>
             )}
 
-            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <button
+              onClick={handleEdit}
+              style={{
+                display: "block",
+                margin: "0 auto 20px",
+                padding: "10px 150px",
+                background: "#a8be005f",
+                color: "#000000ff",
+                border: "none",
+                borderRadius: "5px",
+                cursor: "pointer",
+                fontSize: "16px"
+              }}
+            >
+              Edit Question
+            </button>
+
+            {/* Main Info Table */}
+            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: "30px" }}>
               <tbody>
-                {infoPairs.reduce((rows, pair, index) => {
-                  // Every two items go in one row for two-column layout
+                {mainInfoPairs.reduce((rows, pair, index) => {
                   if (index % 2 === 0) {
-                    const nextPair = infoPairs[index + 1] || ["", ""];
+                    const nextPair = mainInfoPairs[index + 1] || ["", ""];
                     rows.push(
                       <tr key={index}>
                         <td style={labelStyle}>{pair[0]}</td>
@@ -81,6 +106,20 @@ const QuestionDetail = () => {
                 }, [])}
               </tbody>
             </table>
+
+            {/* Long Matters / Comments Table */}
+            <h3 style={{ marginBottom: "10px", color: "#333" }}>Detailed Matters & Comments</h3>
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <tbody>
+                {longInfoPairs.map((pair, idx) => (
+                  <tr key={idx}>
+                    <td style={{ ...labelStyle, width: "200px" }}>{pair[0]}</td>
+                    <td style={fieldStyle}>{pair[1]}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
           </div>
         </main>
       </div>

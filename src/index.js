@@ -15,6 +15,7 @@ import UserListPage from "./pages/userpages/userlistlpage.js";
 import EmailListPage from './pages/userpages/emailistpage.js';
 import UserDetailPage from './pages/userpages/userdetials.js';
 import Users from './pages/overviewpages/installview.js';
+import { ToastContainer } from "react-toastify";
 
 //new dashboard
 import Dashboard2 from './newdashboard.js';
@@ -59,8 +60,19 @@ root.render(
         <Route path='/image-generator' element={<TestingImage />} />
         <Route path='/' element={<Login />}/>
         <Route path='/question/:id' element={<Postquestionsdetails/>}/>
-
       </Routes>
+       <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
     </BrowserRouter>
   </React.StrictMode>
 );

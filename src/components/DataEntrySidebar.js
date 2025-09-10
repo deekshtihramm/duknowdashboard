@@ -26,19 +26,19 @@ const DataEntrySidebar = ({ activeTab, setActiveTab }) => {
         className={`dataentry-toplink ${activeTab === "#contact" ? "active" : ""}`}
         onClick={() => setActiveTab("#contact")}
       >
-        Fact Questions
+        Unposted Questions
+      </button>
+      <button
+        className={`dataentry-toplink ${activeTab === "#allQuestions" ? "active" : ""}`}
+        onClick={() => setActiveTab("#allQuestions")}
+      >
+        All Questions Images
       </button>
       <button
         className={`dataentry-toplink ${activeTab === "#mocktest" ? "active" : ""}`}
         onClick={() => setActiveTab("#mocktest")}
       >
         MockTest Questions
-      </button>
-      <button
-        className={`dataentry-toplink ${activeTab === "#allQuestions" ? "active" : ""}`}
-        onClick={() => setActiveTab("#allQuestions")}
-      >
-        All Questions
       </button>
       {/* <button
         className={`dataentry-toplink ${activeTab === "#modifyQuestions" ? "active" : ""}`}

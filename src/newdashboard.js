@@ -10,7 +10,6 @@ const NewDashboard = ({ children }) => {
 
     const [totalUsers, setTotalUsers] = useState(0);
     const [loading, setLoading] = useState(true);
-    const storedData = JSON.parse(sessionStorage.getItem("userCount"));
     const [recentQuestions, setRecentQuestions] = useState([]);
     const BASE_URL = "https://web.backend.duknow.in"; // ✅ Your backend base URL
 
@@ -27,24 +26,25 @@ const NewDashboard = ({ children }) => {
     };
 
 
-    // useEffect(() => {
-    //   async function fetchUserCount() {
-    //     try {
-    //       const response = await fetch("http://localhost:8000/api/normaluser/alluserscount");
-    //       const data = await response.json();
-    //       sessionStorage.setItem("totalUsers", JSON.stringify(data || 0));
-    //       setLoading(false);
-    //       setTotalUsers(data.usercount || 0);
-    //     } catch (error) {
-    //       console.error("Error fetching user count:", error);
-    //     }
-    //   }
-    //   fetchUserCount();
-    // }, []);
+   useEffect(() => {
+  async function fetchUserCount() {
+    try {
+      const response = await fetch("http://localhost:8000/api/normaluser/alluserscount");
+      const data = await response.json();
+      const count = data?.usercount || 0;
+      sessionStorage.setItem("totalUsers", JSON.stringify(count));
+      setTotalUsers(count);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching user count:", error);
+      setLoading(false);
+    }
+  }
+  fetchUserCount();
+}, []);
 
   // Fetch total unposted questions from API and set state
   const [totalunPostedQuestions, setTotalunPostedQuestions] = useState(0);
-
 
   useEffect(() => {
     async function fetchPostedunQuestionsCount() {
@@ -64,7 +64,6 @@ const NewDashboard = ({ children }) => {
     fetchPostedunQuestionsCount();
   }, []);
   
-
   // Fetch total posted questions from API and set state
   const [totalPostedQuestions, setTotalPostedQuestions] = useState(0);
   useEffect(() => {
@@ -133,12 +132,13 @@ const NewDashboard = ({ children }) => {
                     <section className="dashboard-overview">
                         <h2>Overview</h2>
                         <div className="metrics-grid">
-                            <div style={cardStyle} onClick={() => window.location.href = '/newdashboard/users'}>
+                           <div style={cardStyle} onClick={() => window.location.href = '/newdashboard/users'}>
                                 <div style={titleStyle}>Total Users</div>
                                 <div style={numberStyle}>
-                                  {loading ? "..." : (storedData.usercount !== null ? storedData.totalUsers : "N/A")}
+                                  {loading ? "..." : totalUsers}
                                 </div>
                               </div>
+
                           <div style={cardStyle} onClick={() => window.location.href = '/newdashboard/active-users'}>
                                 <div style={titleStyle}>Active Users</div>
                                 <div style={numberStyle}>
@@ -169,13 +169,48 @@ const NewDashboard = ({ children }) => {
                       <div style={{marginLeft: "20px", height: "45%", width: "50%", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center"}}>
                         <UserSignupChart />
                       </div>
-                      <div>
-                        {/* <UserSignupChart /> */}
+                       <div
+                        style={{
+                          marginLeft: "20px",
+                          height: "45%",
+                          width: "50%",
+                          borderRadius: "8px",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          backgroundColor: "#fff",
+                          boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+                          padding: "15px",
+                          overflowY: "auto",
+                        }}
+                      >
+                        <table
+                          style={{
+                            width: "100%",
+                            borderCollapse: "collapse",
+                            fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                          }}
+                        >
+                          <thead>
+                            <tr style={{ backgroundColor: "#f0f0f0", textAlign: "left" }}>
+                              <th style={{ padding: "10px", borderBottom: "2px solid #ddd" }}>Question</th>
+                              <th style={{ padding: "10px", borderBottom: "2px solid #ddd" }}>Category</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {recentQuestions.map((q, i) => (
+                              <tr key={i} style={{ borderBottom: "1px solid #eee", cursor: "pointer" }}>
+                                <td style={{ padding: "8px", color: "#333" }}>{q.question}</td>
+                                <td style={{ padding: "8px", color: "#555" }}>{q.category}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
                       </div>
                     </section>
 
 
-                    <section className="dashboard-analytics">
+                    {/* <section className="dashboard-analytics">
                         <h2>Analytics</h2>
                         <div className="chart-placeholder">[User Growth Chart]</div>
                         <div className="chart-placeholder">[Questions by Category]</div>
@@ -188,25 +223,10 @@ const NewDashboard = ({ children }) => {
                             <li>Mock Test Uploaded - UPSC Prelims</li>
                             <li>User Registered - John Doe</li>
                         </ul>
-                    </section>
+                    </section> */}
 
                     {/* Recent Questions Table */}
-                    <section className="dashboard-recent">
-                      <h3>Recent Questions</h3>
-                      <table className="dashboard-table">
-                        <thead>
-                          <tr><th>Question</th><th>Category</th></tr>
-                        </thead>
-                        <tbody>
-                          {recentQuestions.map((q, i) => (
-                            <tr key={i}>
-                              <td>{q.question}</td>
-                              <td>{q.category}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </section>
+
                    
 
                     {children}

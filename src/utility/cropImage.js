@@ -28,9 +28,10 @@ export default function getCroppedImg(imageSrc, pixelCrop) {
           reject(new Error("Canvas is empty"));
           return;
         }
-        const fileUrl = URL.createObjectURL(blob);
-        resolve(fileUrl);
-      }, "image/jpeg");
+
+        // ✅ Direct Blob return (not Object URL)
+        resolve(blob);
+      }, "image/jpeg", 0.95);
     };
 
     image.onerror = (err) => reject(err);

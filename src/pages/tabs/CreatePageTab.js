@@ -1,9 +1,11 @@
-import React, { useState, useEffect,useCallback  } from "react";
+import React, { useState, useEffect,useCallback} from "react";
 import "./CreatePageTab.css";
 import { useNavigate } from "react-router-dom";
-  import Cropper from 'react-easy-crop';
+import Cropper from 'react-easy-crop';
 import getCroppedImg from "../../utility/cropImage";
-
+// CORRECT
+import { useLocation } from "react-router-dom";
+import { toast } from "react-toastify";
 
 
 
@@ -20,8 +22,47 @@ const backend_URL2  = "http://localhost:8000";
 const backend_URL3 = "https://app.backend.duknow.in";
 
 const CreatePageTab = () => {
+
+const location = useLocation();
+const [mongoData, setMongoData] = useState(null);
+
+useEffect(() => {
+  if (location.state?.mongoData) {
+    setMongoData(location.state.mongoData);
+  }
+}, [location.state]);
+
+// Add this useEffect to set form fields when mongoData is available
+useEffect(() => {
+  if (mongoData) {
+    setTitle(mongoData.title || "");
+    setMatter(mongoData.matter || "");
+    setLongmatter(mongoData.longmatter || "");
+    setTitleTelugu(mongoData.titleTelugu || "");
+    setMatterTelugu(mongoData.matterTelugu || "");
+    setLongmatterTelugu(mongoData.longmatterTelugu || "");
+    setTitleHindi(mongoData.titleHindi || "");
+    setMatterHindi(mongoData.matterHindi || "");
+    setLongmatterHindi(mongoData.longmatterHindi || "");
+    setLevel(mongoData.level || "simple");
+
+    // Store image locally
+    if (mongoData.imageUrl) {
+      fetch(mongoData.imageUrl)
+        .then(res => res.blob())
+        .then(blob => {
+          const localUrl = URL.createObjectURL(blob);
+          setImageUrl(localUrl);
+        })
+        .catch(err => console.error("Failed to load image:", err));
+    }
+  }
+}, [mongoData]);
+
+
+
   const [successMessage, setSuccessMessage] = useState("");
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   const [pageNumber, setPageNumber] = useState("");
   const [title, setTitle] = useState("");
   const [matter, setMatter] = useState("");
@@ -120,31 +161,39 @@ useEffect(() => {
 useEffect(() => {
   if (!matter && !longmatter) return; // Only run when there is content
 
-  const autoTranslate = async () => {
-    try {
-      if (matter) {
-        const [matterTel, matterHin] = await Promise.all([
-          translate(matter, "Telugu","shortTelugu"),
-          translate(matter, "Hindi","shortHindi"),
-        ]);
-        setMatterTelugu(matterTel);
-        setMatterHindi(matterHin);
+    const autoTranslate = async () => {
+      try {
+        if (matter) {
+          const [matterTel, matterHin] = await Promise.all([
+            translate(matter, "Telugu","shortTelugu"),
+            translate(matter, "Hindi","shortHindi"),
+          ]);
+          setMatterTelugu(matterTel);
+          setMatterHindi(matterHin);
+        }
+  
+        if (longmatter) {
+          const [longTel, longHin] = await Promise.all([
+            translate(longmatter, "Telugu","longTelugu"),
+            translate(longmatter, "Hindi","longHindi"),
+          ]);
+          setLongmatterTelugu(longTel);
+          setLongmatterHindi(longHin);
+        }
+      } catch (error) {
+        console.error("Auto translation failed:", error);
       }
-
-      if (longmatter) {
-        const [longTel, longHin] = await Promise.all([
-          translate(longmatter, "Telugu","longTelugu"),
-          translate(longmatter, "Hindi","longHindi"),
-        ]);
-        setLongmatterTelugu(longTel);
-        setLongmatterHindi(longHin);
-      }
-    } catch (error) {
-      console.error("Auto translation failed:", error);
-    }
-  };
-
-  autoTranslate();
+    };
+    autoTranslate();
+     try {
+          setMatterTelugu(mongoData.matterTelugu);
+          setMatterHindi(mongoData.matterHindi);
+          setLongmatterTelugu(mongoData.longmatterTelugu);
+          setLongmatterHindi(mongoData.longmatterHindi);
+        } catch (error) {
+          console.error("Auto translation failed:", error);
+        }
+        
 }, [matter, longmatter]); // Runs whenever English matter changes
 
 
@@ -427,27 +476,48 @@ const handleSubmit = async () => {
     return;
   }
 
+  setImages([]);
+  setImageFile(null);
+  setImageUrl("");
+
   settotaloading(true);
   let uploadedImageUrl = imageUrl;
 
-  if (imageUrl && croppedAreaPixels) {
-    try {
-      const { blob } = await getCroppedImage(imageUrl, croppedAreaPixels);
-      const file = new File([blob], "cropped.jpg", { type: "image/jpeg" });
-      const formData = new FormData();
-      formData.append("image", file);
+if (imageUrl && croppedAreaPixels) {
+  try {
+    // 1. Crop → Blob
+    const blob = await getCroppedImg(imageUrl, croppedAreaPixels);
 
-      const res = await fetch(`${backend_URL2}/upload-image`, {
-        method: "POST",
-        body: formData,
-      });
+    // 2. Blob → Base64
+    const base64Image = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(blob);
+      reader.onloadend = () => {
+        // Remove "data:image/jpeg;base64," prefix
+        const base64 = reader.result.split(",")[1];
+        resolve(base64);
+      };
+      reader.onerror = reject;
+    });
 
-      const data = await res.json();
-      uploadedImageUrl = data.url || "";
-    } catch (err) {
-      console.error("Upload failed:", err);
-    }
+    // 3. Send as JSON
+    const res = await fetch(`${backend_URL2}/upload-image`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ base64Image }),
+    });
+
+    const data = await res.json();
+    console.log("✅ Uploaded URL:", data.url);
+
+    uploadedImageUrl = data.url || "";
+  } catch (err) {
+    console.error("Upload failed:", err);
   }
+}
+
+
+
 
   if (uploadedImageUrl && uploadedImageUrl.startsWith("data:image")) {
     try {
@@ -504,6 +574,8 @@ const handleSubmit = async () => {
     setSuccessMessage("Page data submitted successfully!");
     window.scrollTo({ top: 0, behavior: "smooth" });
     setTimeout(() => setSuccessMessage(""), 3000);
+    toast.success("Saved successfully!");
+
 
     // Delete the question automatically
     if (currentQuestionId) {
@@ -528,56 +600,7 @@ const handleSubmit = async () => {
   }
 };
 
-const getCroppedImage = (imageSrc, crop) => {
-  return new Promise((resolve, reject) => {
-    const image = new Image();
-    image.src = imageSrc;
-    image.onload = () => {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
 
-      // Enforce 2:1 ratio
-      let cropWidth = crop.width;
-      let cropHeight = crop.width / 4; // 2:1 ratio
-
-      // Ensure crop doesn't go outside image
-      if (crop.y + cropHeight > image.height) {
-        cropHeight = image.height - crop.y;
-        cropWidth = cropHeight * 4;
-      }
-      if (crop.x + cropWidth > image.width) {
-        cropWidth = image.width - crop.x;
-        cropHeight = cropWidth / 4;
-      }
-
-      canvas.width = cropWidth;
-      canvas.height = cropHeight;
-
-      ctx.drawImage(
-        image,
-        crop.x,
-        crop.y,
-        cropWidth,
-        cropHeight,
-        0,
-        0,
-        cropWidth,
-        cropHeight
-      );
-
-      canvas.toBlob(blob => {
-        if (!blob) {
-          reject(new Error('Canvas is empty'));
-          return;
-        }
-        blob.name = 'cropped.jpg';
-        const fileUrl = URL.createObjectURL(blob);
-        resolve({ blob, fileUrl });
-      }, 'image/jpeg');
-    };
-    image.onerror = error => reject(error);
-  });
-};
 
 // New states for Wikimedia
 const [wikimediaResults, setWikimediaResults] = useState([]);
@@ -688,38 +711,50 @@ useEffect(() => {
   }, [selectedPageCategory]);
 
   //fetching questions from mongodb
-  const fetchCategoryQuestions = async (category) => {
-    try {
+ const fetchCategoryQuestions = async (category) => {
+  try {
+    setMatter(" ");
+    setLongmatter(" ");
+    setTitle(" ");
+    setTitleTelugu(" ");
+    setTitleHindi(" ");
+    setMatterTelugu(" ");
+    setLongmatterTelugu(" ");
+    setMatterHindi(" ");
+    setLongmatterHindi(" ");
 
-      setMatter(" ");
-      setLongmatter(" ");
-      setTitle(" ");
-      setTitleTelugu(" ");
-      setTitleHindi(" ");
-      setMatterTelugu(" ");
-      setLongmatterTelugu(" ");
-      setMatterHindi(" ");
-      setLongmatterHindi(" ");
-      
-      const response = await fetch(`${backend_URL}/api/randomquestions/random/${category}`);
-      const data = await response.json();
-      const questions = Array.isArray(data)
-        ? data
-        : data.question
-        ? [data]
-        : [];
+    const response = await fetch(`${backend_URL}/api/randomquestions/random/${category}`);
+    const data = await response.json();
+    const questions = Array.isArray(data)
+      ? data
+      : data.question
+      ? [data]
+      : [];
 
-      setCategoryQuestions(questions);
+    setCategoryQuestions(questions);
 
-      if (questions.length > 0) {
-        setTitle(questions[0].question);
-        setCurrentQuestionId(questions[0]._id);
+    if (questions.length > 0) {
+      const firstQuestion = questions[0];
+      setTitle(firstQuestion.question);
+      setCurrentQuestionId(firstQuestion._id);
+
+      // Auto-delete using category & pageNumber
+      try {
+        await fetch(
+          `${backend_URL}/api/randomquestions/${category}/${firstQuestion.pageNumber}`,
+          { method: "DELETE" }
+        );
+        console.log(`Question from page ${firstQuestion.pageNumber} deleted for category ${category}`);
+      } catch (deleteErr) {
+        console.error("Auto-delete failed:", deleteErr);
       }
-    } catch (error) {
-      console.error("Fetch failed:", error);
-      setCategoryQuestions([]);
     }
-  };
+  } catch (error) {
+    console.error("Fetch failed:", error);
+    setCategoryQuestions([]);
+  }
+};
+
 
   //
   const handleDeleteQuestion = async () => {
@@ -762,11 +797,55 @@ useEffect(() => {
   }, []);
 
   const handleCropAndSave = async () => {
-    if (!selectedImage || !croppedAreaPixels) return;
-    const croppedImg = await getCroppedImg(selectedImage, croppedAreaPixels);
-    setCroppedImage(croppedImg);
-    setCropping(false);
-  };
+  if (!croppedAreaPixels || !imageUrl) return;
+
+  try {
+    const croppedImg = await getCroppedImg(imageUrl, croppedAreaPixels); // Generate cropped image
+    setCroppedImage(croppedImg);        // For cropped preview
+    setSelectedImage(croppedImg);       // Update selected image
+    setImageUrl(croppedImg);            // Update main image field
+    setCropping(false);                 // Close cropper modal
+  } catch (error) {
+    console.error("Crop failed:", error);
+  }
+};
+
+const getCroppedImg = (imageSrc, pixelCrop) => {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.crossOrigin = "anonymous"; // Avoid tainted canvas
+    image.src = imageSrc;
+    image.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = pixelCrop.width;
+      canvas.height = pixelCrop.height;
+      const ctx = canvas.getContext("2d");
+
+      ctx.drawImage(
+        image,
+        pixelCrop.x,
+        pixelCrop.y,
+        pixelCrop.width,
+        pixelCrop.height,
+        0,
+        0,
+        pixelCrop.width,
+        pixelCrop.height
+      );
+
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          reject(new Error("Canvas is empty"));
+          return;
+        }
+        const fileUrl = URL.createObjectURL(blob);
+        resolve(fileUrl);
+      }, "image/jpeg");
+    };
+    image.onerror = () => reject(new Error("Image load failed"));
+  });
+};
+
 
 return (
   <div className="tab-content">
@@ -803,6 +882,9 @@ return (
         <option value="companies">Companies</option>
       </select>
     </div>
+
+    {/* <YourRoutesOrComponents />
+      <ToastContainer position="top-right" autoClose={3000} /> */}
 
     {/* Retrieved Questions */}
     {Array.isArray(categoryQuestions) && categoryQuestions.length > 0 && (
@@ -1027,208 +1109,242 @@ return (
       </div>
     </div>
 
-<div className="image-section">
-  <div className="image-controls">
-    <button className="ai-button" onClick={handleAIImage}>
-      {loading.image ? "Generating..." : "AI Creation (4 Images)"}
-    </button>
-    <label>URL:</label>
-    <input
-      type="text"
-      className="image-url-input"
-      placeholder="Enter or paste image URL"
-      value={imageUrl}
-      onChange={handleImageUrlChange}
-    />
-    {/* <label className="upload-button">
-      Select */}
-      <input
-        type="file"
-        accept="image/*"
-        onChange={(e) => {
-          const file = e.target.files[0];
-          if (file) {
-            setImageFile(file); // store the File object
-            const reader = new FileReader();
-            reader.onloadend = () => setImageUrl(reader.result); // show preview
-            reader.readAsDataURL(file);
-          }
-        }}
-      />
-    {/* </label> */}
-  </div>
 
-  <div className="image-frame-grid">
-    {images.length > 0 ? (
-      images.map((img, index) => (
-        <div
-          key={index}
-          className="image-frame-clickable"
-          onClick={() => setImageUrl(img)}
-        >
-          <img src={img} alt={`Generated ${index + 1}`} />
-        </div>
-      ))
-    ) : (
-      <p>No AI images generated yet</p>
-    )}
-  </div>
+      <div className="image-section">
+        <div className="image-controls">
+          <button className="ai-button" onClick={handleAIImage}>
+            {loading.image ? "Generating..." : "AI Creation (4 Images)"}
+          </button>
 
+          <label>URL:</label>
+          <input
+            type="text"
+            className="image-url-input"
+            placeholder="Enter or paste image URL"
+            value={imageUrl}
+            onChange={handleImageUrlChange}
+          />
 
-<div className="unsplash-gallery ">
-  <h4>UNSPLASH Images for "{title}"</h4>
-  <div className="image-frame-grid">
-    {fetchedImages.length > 0 ? (
-      fetchedImages.map((img, index) => (
-        <div
-          key={index}
-          className={`image-frame-clickable ${selectedImage === img ? "selected" : ""}`}
-          onClick={() => {
-            setImageUrl(img); // set as selected
-            setSelectedImage(img);
-          }}
-        >
-          <img src={img} alt={`Unsplash ${index + 1}`} style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "8px" }} />
-        </div>
-      ))
-    ) : (
-      <p>No images found for this title</p>
-    )}
-  </div>
-</div>
-
-{/* Toggle Wikimedia celebrity mode */}
-<label style={{ display: "flex", gap: 8, alignItems: "center", margin: "10px 0" }}>
-  <input
-    type="checkbox"
-    checked={includeCelebs}
-    onChange={(e) => setIncludeCelebs(e.target.checked)}
-  />
-  Include celebrities in Wikimedia search
-</label>
-
-{/* Wikimedia Images */}
-<div className="image-frame-grid">
-  {wikimediaResults.map((r) => (
-    <a key={r.id} rel="noreferrer">
-      <img
-        src={r.thumb}
-        alt={r.title}
-        style={{
-          width: "100%",
-          height: 180,
-          borderRadius: 8,
-          cursor: "pointer",
-          border: selectedImage === r.thumb ? "3px solid blue" : "1px solid #ccc"
-        }}
-        onClick={() => setImageUrl(r.thumb)} 
-      />
-    </a>
-  ))}
-</div>
-
-  <div className="selected-image-preview">
-    {imageUrl && <img src={imageUrl} alt="Selected" className="preview-image" />}
-  </div>
-</div>
-
-<div style={{width:"70%",height:"50%",alignContent:"center" }}>
-{imageUrl && showCropper && (
-  <div className="crop-container" style={{ position: 'relative', width: '100%', height: '400px' }}>
-    <Cropper
-      image={imageUrl}
-      crop={crop}
-      zoom={zoom}
-      aspect={4 / 3} // or any ratio
-      onCropChange={setCrop}
-      onZoomChange={setZoom}
-      onCropComplete={(_, croppedPixels) => setCroppedAreaPixels(croppedPixels)}
-    />
-  </div>
-)}
-<button onClick={() => setShowCropper(true)}>Crop Image</button>
-
-
-
-{cropping && selectedImage && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            background: "rgba(0,0,0,0.7)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            flexDirection: "column",
-            zIndex: 1000,
-          }}
-        >
-          <div style={{ position: "relative", width: 300, height: 300, background: "#000" }}>
-            <Cropper
-              image={selectedImage}
-              crop={crop}
-              zoom={zoom}
-              aspect={1}
-              onCropChange={setCrop}
-              onZoomChange={setZoom}
-              onCropComplete={onCropComplete}
-            />
-          </div>
-          <div style={{ marginTop: 20, display: "flex", gap: 10 }}>
-            <button
-              onClick={handleCropAndSave}
-              style={{
-                padding: "8px 14px",
-                fontSize: 16,
-                background: "green",
-                color: "#fff",
-                border: "none",
-                borderRadius: 6,
-                cursor: "pointer",
-              }}
-            >
-              Crop & Save
-            </button>
-            <button
-              onClick={() => setCropping(false)}
-              style={{
-                padding: "8px 14px",
-                fontSize: 16,
-                background: "red",
-                color: "#fff",
-                border: "none",
-                borderRadius: 6,
-                cursor: "pointer",
-              }}
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
- {croppedImage && (
-        <div style={{ marginTop: 20 }}>
-          <h3>Cropped Image Preview</h3>
-          <img
-            src={croppedImage}
-            alt="Cropped Preview"
-            style={{ width: 300, borderRadius: 8 }}
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              const file = e.target.files[0];
+              if (file) {
+                setImageFile(file);
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                  const img = new Image();
+                  img.crossOrigin = "anonymous"; // Prevent tainted canvas
+                  img.src = reader.result;
+                  img.onload = () => setImageUrl(img.src);
+                };
+                reader.readAsDataURL(file);
+              }
+            }}
           />
         </div>
-      )}
-  </div>
 
-    {/* Submit */}
-    <button onClick={handleSubmit} style={{ padding: "8px 16px", marginTop: "15px" }}>
-      {!totlaloading ? "Submit Page Data" : "Loading"
-      }
-    </button>
-  </div>
+        {/* AI Generated Images */}
+        <div className="image-frame-grid">
+          {images.length > 0 ? (
+            images.map((img, index) => (
+              <div
+                key={index}
+                className="image-frame-clickable"
+                onClick={() => {
+                  setSelectedImage(img);
+                  setImageUrl(img);
+                }}
+              >
+                <img src={img} alt={`Generated ${index + 1}`} />
+              </div>
+            ))
+          ) : (
+            <p>No AI images generated yet</p>
+          )}
+        </div>
+
+        {/* Unsplash Images */}
+        <div className="unsplash-gallery">
+          <h4>UNSPLASH Images for "{title}"</h4>
+          <div className="image-frame-grid">
+            {fetchedImages.length > 0 ? (
+              fetchedImages.map((img, index) => (
+                <div
+                  key={index}
+                  className={`image-frame-clickable ${
+                    selectedImage === img ? "selected" : ""
+                  }`}
+                  onClick={() => {
+                    setSelectedImage(img);
+                    setImageUrl(img);
+                  }}
+                >
+                  <img
+                    src={img}
+                    alt={`Unsplash ${index + 1}`}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      borderRadius: "8px",
+                    }}
+                  />
+                </div>
+              ))
+            ) : (
+              <p>No images found for this title</p>
+            )}
+          </div>
+        </div>
+
+        {/* Wikimedia Celebrity Toggle */}
+        <label
+          style={{
+            display: "flex",
+            gap: 8,
+            alignItems: "center",
+            margin: "10px 0",
+          }}
+        >
+          <input
+            type="checkbox"
+            checked={includeCelebs}
+            onChange={(e) => setIncludeCelebs(e.target.checked)}
+          />
+          Include celebrities in Wikimedia search
+        </label>
+
+        {/* Wikimedia Images */}
+        <div className="image-frame-grid">
+          {wikimediaResults.map((r) => (
+            <div
+              key={r.id}
+              className={`image-frame-clickable ${
+                selectedImage === r.thumb ? "selected" : ""
+              }`}
+              onClick={() => {
+                setSelectedImage(r.thumb);
+                setImageUrl(r.thumb);
+              }}
+            >
+              <img
+                src={r.thumb}
+                alt={r.title}
+                style={{
+                  width: "100%",
+                  height: 180,
+                  borderRadius: 8,
+                  cursor: "pointer",
+                  border:
+                    selectedImage === r.thumb
+                      ? "3px solid blue"
+                      : "1px solid #ccc",
+                }}
+              />
+            </div>
+          ))}
+        </div>
+
+        {/* Selected Image Preview */}
+        <div className="selected-image-preview">
+          {imageUrl && <img src={imageUrl} alt="Selected" className="preview-image" />}
+        </div>
+
+        {/* Crop Button */}
+        <button onClick={() => setCropping(true)} style={{ marginTop: "15px" }}>
+          Crop Image
+        </button>
+
+        {/* Cropper Modal */}
+        {cropping && imageUrl && (
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100vw",
+              height: "100vh",
+              background: "rgba(0, 0, 0, 0.44)",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              flexDirection: "column",
+              zIndex: 1000,
+            }}
+          >
+            <div
+              style={{
+                position: "relative",
+                width: 300,
+                height: 300,
+                background: "#000000a0",
+              }}
+            >
+              <Cropper
+                image={imageUrl}
+                crop={crop}
+                zoom={zoom}
+                aspect={4 / 3} // your desired aspect ratio
+                onCropChange={setCrop}
+                onZoomChange={setZoom}
+                onCropComplete={onCropComplete}
+                crossOrigin="anonymous"
+              />
+            </div>
+            <div style={{ marginTop: 20, display: "flex", gap: 10 }}>
+              <button
+                onClick={handleCropAndSave}
+                style={{
+                  padding: "8px 14px",
+                  fontSize: 16,
+                  background: "green",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: 6,
+                  cursor: "pointer",
+                }}
+              >
+                Crop & Save
+              </button>
+              <button
+                onClick={() => setCropping(false)}
+                style={{
+                  padding: "8px 14px",
+                  fontSize: 16,
+                  background: "red",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: 6,
+                  cursor: "pointer",
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Cropped Image Preview */}
+        {croppedImage && (
+          <div style={{ marginTop: 20 }}>
+            <h3>Cropped Image Preview</h3>
+            <img
+              src={croppedImage}
+              alt="Cropped Preview"
+              style={{ width: 300, borderRadius: 8 }}
+            />
+          </div>
+        )}
+
+        {/* Submit Button */}
+        <button onClick={handleSubmit} style={{ padding: "8px 16px", marginTop: "15px" }}>
+          {!totlaloading ? "Submit Page Data" : "Loading"}
+        </button>
+      </div>
+</div>
 );
-
 };
 
 export default CreatePageTab;  

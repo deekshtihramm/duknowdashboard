@@ -30,7 +30,8 @@ const Postquestions = () => {
     { value: "geography", label: "Geography" },
     { value: "economy", label: "Economy" },
     { value: "aptitude", label: "Aptitude" },
-    { value: "coding", label: "Coding" }
+    { value: "coding", label: "Coding" },
+    { value: "software", label: "Software"},
   ];
 
   const fetchCounts = async () => {
@@ -77,6 +78,8 @@ const Postquestions = () => {
       });
       if (response.ok) {
         setQuestions(prev => prev.filter(q => q._id !== id));
+        alert("question deleted")
+        window.location.reload();
       } else {
         alert("Failed to delete question");
       }
@@ -213,7 +216,7 @@ const Postquestions = () => {
       <td>{item.pageNumber}</td>
       <td>
         <button
-          onClick={(e) => { e.stopPropagation(); deleteQuestion(item._id); }}
+          onClick={(e) => { e.stopPropagation(); deleteQuestion(item.pageNumber); }}
           style={{
             background: "red",
             color: "#fff",
