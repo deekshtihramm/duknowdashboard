@@ -125,7 +125,7 @@ const NewDashboard = ({ children }) => {
 
   useEffect(() => {
    // ✅ Recent questions
-    getSessionOrFetch("recentQuestions", `${BASE_URL}/api/randomquestions`, (data) => {
+    getSessionOrFetch("recentQuestions", `${BASE_URL}/api/random`, (data) => {
       if (Array.isArray(data)) {
         setRecentQuestions(data.slice(-10).reverse());
       } else {

@@ -9,7 +9,7 @@ const DEFAULT_CATEGORIES = [
   "general", "business", "food", "history", "movies", "mythology",
   "scientists", "space", "sports", "technology", "aptitude",
   "computer", "english", "reasoning", "gk", "polity", "geography",
-  "currentaffairs", "economy", "environment", "ethics", "coding", "chemistry"
+  "currentaffairs", "economy", "environment", "ethics", "coding", "chemistry","aitools"
 ];
 
 const TotalPostedQuestions = () => {
