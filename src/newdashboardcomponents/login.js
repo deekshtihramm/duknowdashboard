@@ -5,40 +5,53 @@ import './LoginPage.css';
 import { useNavigate } from 'react-router-dom';
 
 export default function ProfessionalLoginPage({ onLogin }) {
-  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [remember, setRemember] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigation = useNavigate();
+  const [email, setEmail] = useState(() => localStorage.getItem('duknowEmail') || '');
+  const [remember, setRemember] = useState(() => !!localStorage.getItem('duknowEmail'));
 
-  async function submit(e) {
-    e.preventDefault();
-    setError('');
 
-    if (!email.trim()) return setError('Please enter your email');
-    if (!password.trim()) return setError('Please enter your password');
+async function submit(e) {
+  e.preventDefault();
+  setError('');
 
-    try {
-      setLoading(true);
-      const res = await fetch('https://web.backend.duknow.in/api/dashboard/signin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email.trim(), password, remember }),
-      });
+  if (!email.trim()) return setError('Please enter your email');
+  if (!password.trim()) return setError('Please enter your password');
 
-      const data = await res.json();
+  try {
+    setLoading(true);
 
-      if (!res.ok) throw new Error(data.error || 'Login failed');
-      if (onLogin) onLogin(data);
-      else console.log('Login success:', data);
-      navigation('/newdashboard');
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+    const res = await fetch('https://web.backend.duknow.in/api/dashboard/signin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email.trim(), password, remember }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.error || 'Login failed');
+
+    // ✅ Save token and email in localStorage
+    if (data.token) localStorage.setItem('duknowToken', data.token);
+    if (remember) {
+      localStorage.setItem('duknowEmail', email.trim());
+    } else {
+      localStorage.removeItem('duknowEmail');
     }
+
+    if (onLogin) onLogin(data);
+    else console.log('Login success:', data);
+
+    navigation('/newdashboard');
+  } catch (err) {
+    setError(err.message);
+  } finally {
+    setLoading(false);
   }
+}
+
 
   return (
     <div className="lp-root">

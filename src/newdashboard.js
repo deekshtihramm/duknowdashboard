@@ -18,7 +18,7 @@ const NewDashboard = ({ children }) => {
 
 
       useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("duknowToken");
     if (!token) {
       navigate("/"); // redirect if not logged in
     }
@@ -220,27 +220,6 @@ const NewDashboard = ({ children }) => {
                         </table>
                       </div>
                     </section>
-
-
-                    {/* <section className="dashboard-analytics">
-                        <h2>Analytics</h2>
-                        <div className="chart-placeholder">[User Growth Chart]</div>
-                        <div className="chart-placeholder">[Questions by Category]</div>
-                    </section>
-
-                    <section className="dashboard-recent">
-                        <h2>Recent Activity</h2>
-                        <ul>
-                            <li>New Question Added - "Photosynthesis" (English)</li>
-                            <li>Mock Test Uploaded - UPSC Prelims</li>
-                            <li>User Registered - John Doe</li>
-                        </ul>
-                    </section> */}
-
-                    {/* Recent Questions Table */}
-
-                   
-
                     {children}
                 </main>
             </div>
