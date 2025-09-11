@@ -8,10 +8,6 @@ import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { BASE_URL } from "../../config";
 
-
-
-
-
 const GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/";
 
 const API_KEY = process.env.REACT_APP_GEMINI_API_KEY;
@@ -19,7 +15,7 @@ const API_KEY = process.env.REACT_APP_GEMINI_API_KEY;
 
 const backend_URL = "https://web.backend.duknow.in"; // ✅ Base URL added
 
-const backend_URL2  = "backend_URL";
+const backend_URL2  = "http://localhost:8000";
 
 const backend_URL3 = "https://app.backend.duknow.in";
 
@@ -60,9 +56,6 @@ useEffect(() => {
     }
   }
 }, [mongoData]);
-
-
-
   const [successMessage, setSuccessMessage] = useState("");
   const navigate = useNavigate();
   const [pageNumber, setPageNumber] = useState("");
@@ -209,32 +202,71 @@ const handleTranslate = async (text, lang, setter,content) => {
 
 const BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict";
 
-const handleAIImage = async () => {
-  setLoading(prev => ({ prev, image: true }));
+const handleAIImage = async (type) => {
+  setLoading(prev => ({ ...prev, image: true }));
+
+  let customPrompt = "";
+  switch (type) {
+    case "text":
+      customPrompt = `Generate only a clean, text-based image for: ${title}`;
+      break;
+    case "logo":
+      customPrompt = `Generate a professional and minimal company logo for: ${title}`;
+      break;
+    case "title":
+      customPrompt = `Generate an artistic title card with stylish fonts for: ${title}`;
+      break;
+    case "programming":
+      customPrompt = `Generate a high-quality programming/code themed image for: ${title}`;
+      break;
+    case "icon":
+      customPrompt = `Generate a minimal app icon for: ${title}`;
+      break;
+    case "banner":
+      customPrompt = `Generate a wide banner-style image for: ${title}`;
+      break;
+    case "poster":
+      customPrompt = `Generate a creative poster design for: ${title}`;
+      break;
+    case "background":
+      customPrompt = `Generate a high-quality background wallpaper for: ${title}`;
+      break;
+    case "3d":
+      customPrompt = `Generate a realistic 3D styled render of: ${title}`;
+      break;
+    case "cartoon":
+      customPrompt = `Generate a cartoon/comic styled illustration of: ${title}`;
+      break;
+    case "realistic":
+      customPrompt = `Generate a realistic high-quality photo of: ${title}`;
+      break;
+    default:
+      customPrompt = `Create a high-quality image of: ${title}`;
+  }
+
   const body = {
-    instances: [{ prompt: `Create a high-quality image of: ${title} sharp and clean without text` }],
-    parameters: { sampleCount: 4 }
+    instances: [{ prompt: customPrompt }],
+    parameters: { sampleCount: 4 },
   };
 
   try {
     const response = await fetch(`${BASE_URL}?key=${API_KEY}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body)
-
+      body: JSON.stringify(body),
     });
-
     const data = await response.json();
-    const newImages = data?.predictions?.map(
-      p => `data:image/png;base64,${p.bytesBase64Encoded}`
-    ) || [];
 
-    // Prepend new images to show them first
-    setImages(prevImages => [...newImages, ...prevImages]);
+    const newImages =
+      data?.predictions?.map(
+        (p) => `data:image/png;base64,${p.bytesBase64Encoded}`
+      ) || [];
+
+    setImages((prevImages) => [...newImages, ...prevImages]);
   } catch (error) {
     console.error("Image generation failed:", error);
   } finally {
-    setLoading(prev => ({ ...prev, image: false }));
+    setLoading((prev) => ({ ...prev, image: false }));
   }
 };
 
@@ -287,36 +319,6 @@ const handleAIImage = async () => {
     return new File([u8arr], filename, { type: mime });
   };
 
-
-
-// const generateImagesFromPrompt = async (prompt) => {
-//   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent?key=${API_KEY}`;
-
-//   const requests = Array.from({ length: 4 }, () =>
-//     fetch(url, {
-//       method: "POST",
-//       headers: { "Content-Type": "application/json" },
-//       body: JSON.stringify({
-//         contents: [
-//           { role: "user", parts: [{ text: `Create a 1024x1024 image: ${prompt}` }] }
-//         ],
-//         generationConfig: { response_mime_type: "text/plain" }
-//       }),
-//     }).then(res => res.json())
-//   );
-
-//   const responses = await Promise.all(requests);
-
-//   return responses
-//     .map(res => {
-//       const base64 = res?.candidates?.[0]?.content?.parts?.[0]?.inline_data?.data;
-//       return base64 ? `data:image/png;base64,${base64}` : null;
-//     })
-//     .filter(Boolean);
-// };
-
-
-
 // Fast and optimized Gemini API content generation
 const handleExplain = async (text, setter, language, type, fieldKey) => {
   if (!text) return "";
@@ -342,7 +344,7 @@ else {
               role: "user",
               parts: [
                 {
-                  text: `${type === "short" ? "Provide a concise but complete answer to the following question in under 500 characters above 100 characters" : "Provide a detailed response to the following question using 2000 to 3000 characters. Avoid unnecessary empty lines or spaces"} about "${text}" in ${language}`
+                  text: `${type === "short" ? "Provide a concise but complete answer to the following question in under 1000 characters above 500 characters" : "Provide a detailed response to the following question using 4000 to 5000 characters. Avoid unnecessary empty lines or spaces"} about "${text}" in ${language}`
                 }
               ]
             }
@@ -350,10 +352,6 @@ else {
         }),
       }
     );
-
-
-    //Provide a concise but complete answer to the following question in under 500 characters above 100 characters : \"$title\", $selectedLevel"
-
     const data = await response.json();
     const result = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
     setter(result);
@@ -366,7 +364,6 @@ else {
     setLoading(prev => ({ ...prev, [fieldKey]: false }));
   }
 };
-
 
 const translate = async (text, language, content) => {
   if (!text) return "";
@@ -430,7 +427,6 @@ const translate = async (text, language, content) => {
   }
 };
 
-
 const [images, setImages] = useState([]);
 
 // const handleGenerateImages = async () => {
@@ -480,48 +476,21 @@ const handleSubmit = async () => {
     return;
   }
 
+  // reset state
   setImages([]);
-  setImageFile(null);
   setImageUrl("");
-
+  setSuccessMessage("");
   settotaloading(true);
-  let uploadedImageUrl = imageUrl;
 
- if (imageUrl && croppedAreaPixels) {
-    try {
-      // 1. Crop → File
-      const file = await getCroppedImg(imageUrl, croppedAreaPixels);
+  let uploadedImageUrl = "";
 
-      // ❌ Wrong (this causes [object File])
-      // setPreview(file);
+  try {
+    // 🔑 1. Upload cropped image to AWS S3
+    if (imageFile) {
+      console.log("Uploading file to AWS:", imageFile.name, imageFile.size);
 
-      // ✅ Correct way for preview
-      const previewUrl = URL.createObjectURL(file);
-      setPreview(previewUrl);
-
-      // 2. Upload kosam
       const formData = new FormData();
-      formData.append("image", file);
-
-      const res = await fetch(`${backend_URL3}/upload-image`, {
-        method: "POST",
-        body: formData,
-      });
-
-      const data = await res.json();
-      console.log("✅ Uploaded URL:", data.url);
-    } catch (err) {
-      console.error("Upload failed:", err);
-    }
-  }
-
-
-  if (uploadedImageUrl && uploadedImageUrl.startsWith("data:image")) {
-    try {
-      const compressedBase64 = await compressImage(uploadedImageUrl, 500);
-      const file = dataURLtoFile(compressedBase64, "generated.jpg");
-      const formData = new FormData();
-      formData.append("image", file);
+      formData.append("image", imageFile);
 
       const res = await fetch(`${backend_URL2}/upload-image`, {
         method: "POST",
@@ -530,31 +499,52 @@ const handleSubmit = async () => {
 
       const data = await res.json();
       uploadedImageUrl = data.url || "";
-    } catch (err) {
-      console.error("Upload failed:", err);
+      console.log("AWS Uploaded URL:", uploadedImageUrl);
     }
-  }
 
-  const payload = {
-    pageNumber,
-    title: title || "Untitled",
-    matter: matter || "No content",
-    longmatter: longmatter || "No content",
-    titleTelugu: titleTelugu || "No content",
-    matterTelugu: matterTelugu || "No content",
-    longmatterTelugu: longmatterTelugu || "No content",
-    titleHindi: titleHindi || "No content",
-    matterHindi: matterHindi || "No content",
-    longmatterHindi: longmatterHindi || "No content",
-    imageUrl: uploadedImageUrl || "",
-    category: selectedPageCategory || "No Category",
-    level: level || "simple",
-    update: updateField || "false",
-    place: "India",
-  };
+    // 🔑 2. If image is still base64 (from canvas), compress + upload again
+    if (uploadedImageUrl && uploadedImageUrl.startsWith("data:image")) {
+      try {
+        console.log("Compressing base64 image before upload...");
+        const compressedBase64 = await compressImage(uploadedImageUrl, 500);
+        const file = dataURLtoFile(compressedBase64, "generated.jpg");
 
-  try {
-    // Post to both APIs
+        const formData = new FormData();
+        formData.append("image", file);
+
+        const res = await fetch(`${backend_URL2}/upload-image`, {
+          method: "POST",
+          body: formData,
+        });
+
+        const data = await res.json();
+        uploadedImageUrl = data.url || "";
+        console.log("Compressed image uploaded URL:", uploadedImageUrl);
+      } catch (err) {
+        console.error("Upload failed (compressed):", err);
+      }
+    }
+
+    // 🔑 3. Prepare payload
+    const payload = {
+      pageNumber,
+      title: title || "Untitled",
+      matter: matter || "No content",
+      longmatter: longmatter || "No content",
+      titleTelugu: titleTelugu || "No content",
+      matterTelugu: matterTelugu || "No content",
+      longmatterTelugu: longmatterTelugu || "No content",
+      titleHindi: titleHindi || "No content",
+      matterHindi: matterHindi || "No content",
+      longmatterHindi: longmatterHindi || "No content",
+      imageUrl: uploadedImageUrl || "",
+      category: selectedPageCategory || "No Category",
+      level: level || "simple",
+      update: updateField || "false",
+      place: "India",
+    };
+
+    // 🔑 4. Post to both APIs
     await Promise.all([
       fetch(`${backend_URL3}/api/${selectedPageCategory}page/`, {
         method: "POST",
@@ -568,13 +558,13 @@ const handleSubmit = async () => {
       }),
     ]);
 
+    // success UI
     setSuccessMessage("Page data submitted successfully!");
+    toast.success("Saved successfully!");
     window.scrollTo({ top: 0, behavior: "smooth" });
     setTimeout(() => setSuccessMessage(""), 3000);
-    toast.success("Saved successfully!");
 
-
-    // Delete the question automatically
+    // 🔑 5. Auto-delete question (if needed)
     if (currentQuestionId) {
       try {
         await fetch(`${BASE_URL}/api/randomquestions/delete/${currentQuestionId}`, {
@@ -586,7 +576,7 @@ const handleSubmit = async () => {
       }
     }
 
-    // Refresh category questions
+    // 🔑 6. Refresh category questions
     fetchCategoryQuestions(selectedPageCategory);
 
   } catch (error) {
@@ -596,6 +586,7 @@ const handleSubmit = async () => {
     settotaloading(false);
   }
 };
+
 
 // New states for Wikimedia
 const [wikimediaResults, setWikimediaResults] = useState([]);
@@ -788,16 +779,15 @@ useEffect(() => {
  const onCropComplete = useCallback((_, croppedPixels) => {
     setCroppedAreaPixels(croppedPixels);
   }, []);
-
-  const handleCropAndSave = async () => {
+const handleCropAndSave = async () => {
   if (!croppedAreaPixels || !imageUrl) return;
 
   try {
-    const croppedImg = await getCroppedImg(imageUrl, croppedAreaPixels); // Generate cropped image
-    setCroppedImage(croppedImg);        // For cropped preview
-    setSelectedImage(croppedImg);       // Update selected image
-    setImageUrl(croppedImg);            // Update main image field
-    setCropping(false);                 // Close cropper modal
+    const croppedFile = await getCroppedImg(imageUrl, croppedAreaPixels);
+    setCroppedImage(URL.createObjectURL(croppedFile)); // Preview
+    setImageFile(croppedFile); // ✅ Replace with cropped file
+    setShowCropper(false);
+    setCropping(false)
   } catch (error) {
     console.error("Crop failed:", error);
   }
@@ -806,7 +796,7 @@ useEffect(() => {
 const getCroppedImg = (imageSrc, pixelCrop) => {
   return new Promise((resolve, reject) => {
     const image = new Image();
-    image.crossOrigin = "anonymous"; // to avoid CORS taint
+    image.crossOrigin = "anonymous";
     image.src = imageSrc;
 
     image.onload = () => {
@@ -832,16 +822,13 @@ const getCroppedImg = (imageSrc, pixelCrop) => {
           reject(new Error("Canvas is empty"));
           return;
         }
-        // ✅ Return actual Blob instead of objectURL
-        const file = new File([blob], "cropped.jpg", { type: "image/jpeg" });
-        resolve(file);
-      }, "image/jpeg", 0.9);
+        resolve(new File([blob], "cropped.jpg", { type: "image/jpeg" }));
+      }, "image/jpeg");
     };
 
-    image.onerror = () => reject(new Error("Image load failed"));
+    image.onerror = (err) => reject(err);
   });
 };
-
 
 return (
   <div className="tab-content">
@@ -1137,7 +1124,43 @@ return (
           />
         </div>
 
+     <div style={{ margin: "10px 0" }}>
+  <button onClick={() => handleAIImage("text")} className="btn" style={{ marginRight: 8 }}>
+    Text Image
+  </button>
+  <button onClick={() => handleAIImage("logo")} className="btn" style={{ marginRight: 8 }}>
+    Logo
+  </button>
+  <button onClick={() => handleAIImage("title")} className="btn" style={{ marginRight: 8 }}>
+    Title Image
+  </button>
+  <button onClick={() => handleAIImage("programming")} className="btn" style={{ marginRight: 8 }}>
+    Programming Image
+  </button>
+  <button onClick={() => handleAIImage("icon")} className="btn" style={{ marginRight: 8 }}>
+    Icon
+  </button>
+  <button onClick={() => handleAIImage("banner")} className="btn" style={{ marginRight: 8 }}>
+    Banner
+  </button>
+  <button onClick={() => handleAIImage("poster")} className="btn" style={{ marginRight: 8 }}>
+    Poster
+  </button>
+  <button onClick={() => handleAIImage("background")} className="btn" style={{ marginRight: 8 }}>
+    Background
+  </button>
+  <button onClick={() => handleAIImage("3d")} className="btn" style={{ marginRight: 8 }}>
+    3D Style
+  </button>
+  <button onClick={() => handleAIImage("cartoon")} className="btn" style={{ marginRight: 8 }}>
+    Cartoon
+  </button>
+  <button onClick={() => handleAIImage("realistic")} className="btn">
+    Realistic Photo
+  </button>
+</div>
         {/* AI Generated Images */}
+          <h3>AI images</h3>
         <div className="image-frame-grid">
           {images.length > 0 ? (
             images.map((img, index) => (
@@ -1192,22 +1215,9 @@ return (
         </div>
 
         {/* Wikimedia Celebrity Toggle */}
-        <label
-          style={{
-            display: "flex",
-            gap: 8,
-            alignItems: "center",
-            margin: "10px 0",
-          }}
-        >
-          <input
-            type="checkbox"
-            checked={includeCelebs}
-            onChange={(e) => setIncludeCelebs(e.target.checked)}
-          />
+         <h4>
           Include celebrities in Wikimedia search
-        </label>
-
+         </h4>
         {/* Wikimedia Images */}
         <div className="image-frame-grid">
           {wikimediaResults.map((r) => (
@@ -1238,111 +1248,147 @@ return (
             </div>
           ))}
         </div>
-
         {/* Selected Image Preview */}
-        <div className="selected-image-preview">
-          {imageUrl && <img src={imageUrl} alt="Selected" className="preview-image" />}
+        <div
+          className="selected-image-preview"
+          style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}
+        >
+          {imageUrl && (
+            <img
+              src={imageUrl}
+              alt="Selected"
+              className="preview-image"
+              style={{ maxWidth: "450px", borderRadius: "8px" }}
+            />
+          )}
         </div>
 
-        {/* Crop Button */}
-        <button onClick={() => setCropping(true)} style={{ marginTop: "15px" }}>
-          Crop Image
-        </button>
+{/* Crop Button */}
+<div style={{ display: "flex", justifyContent: "center", marginTop: "15px" }}>
+  <button
+    onClick={() => setCropping(true)}
+    style={{
+      padding: "8px 16px",
+      borderRadius: "6px",
+      background: "#565c60",
+      color: "#fff",
+      border: "none",
+      cursor: "pointer",
+    }}
+  >
+    Crop Image
+  </button>
+</div>
 
-        {/* Cropper Modal */}
-        {cropping && imageUrl && (
-          <div
-            style={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              width: "100vw",
-              height: "100vh",
-              background: "rgba(0, 0, 0, 0.44)",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              flexDirection: "column",
-              zIndex: 1000,
-            }}
-          >
-            <div
-              style={{
-                position: "relative",
-                width: 300,
-                height: 300,
-                background: "#000000a0",
-              }}
-            >
-              <Cropper
-                image={imageUrl}
-                crop={crop}
-                zoom={zoom}
-                aspect={4 / 3} // your desired aspect ratio
-                onCropChange={setCrop}
-                onZoomChange={setZoom}
-                onCropComplete={onCropComplete}
-                crossOrigin="anonymous"
-              />
-            </div>
-            <div style={{ marginTop: 20, display: "flex", gap: 10 }}>
-              <button
-                onClick={handleCropAndSave}
-                style={{
-                  padding: "8px 14px",
-                  fontSize: 16,
-                  background: "green",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: 6,
-                  cursor: "pointer",
-                }}
-              >
-                Crop & Save
-              </button>
-              <button
-                onClick={() => setCropping(false)}
-                style={{
-                  padding: "8px 14px",
-                  fontSize: 16,
-                  background: "red",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: 6,
-                  cursor: "pointer",
-                }}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        )}
+{/* Cropper Modal */}
+{cropping && imageUrl && (
+  <div
+    style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      width: "100vw",
+      height: "100vh",
+      background: "rgba(0, 0, 0, 0.44)",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      flexDirection: "column",
+      zIndex: 1000,
+    }}
+  >
+    <div
+      style={{
+        position: "relative",
+        width: 300,
+        height: 300,
+        background: "#000000a0",
+      }}
+    >
+      <Cropper
+        image={imageUrl}
+        crop={crop}
+        zoom={zoom}
+        aspect={4 / 3}
+        onCropChange={setCrop}
+        onZoomChange={setZoom}
+        onCropComplete={onCropComplete}
+        crossOrigin="anonymous"
+      />
+    </div>
 
-        {/* Cropped Image Preview */}
-        {croppedImage && (
-          <div style={{ marginTop: 20 }}>
-            <h3>Cropped Image Preview</h3>
-            <img
-              src={croppedImage}
-              alt="Cropped Preview"
-              style={{ width: 300, borderRadius: 8 }}
-            />
-          </div>
-        )}
-
-       {preview && (
-  <div>
-    <h4>Cropped Preview:</h4>
-    <img src={preview} alt="Cropped Preview" style={{ maxWidth: "250px" }} />
+    {/* Buttons Centered */}
+    <div
+      style={{
+        marginTop: 20,
+        display: "flex",
+        gap: 10,
+        justifyContent: "center",
+      }}
+    >
+      <button
+        onClick={handleCropAndSave}
+        style={{
+          padding: "8px 14px",
+          fontSize: 16,
+          background: "green",
+          color: "#fff",
+          border: "none",
+          borderRadius: 6,
+          cursor: "pointer",
+        }}
+      >
+        Crop & Save
+      </button>
+      <button
+        onClick={() => setCropping(false)}
+        style={{
+          padding: "8px 14px",
+          fontSize: 16,
+          background: "red",
+          color: "#fff",
+          border: "none",
+          borderRadius: 6,
+          cursor: "pointer",
+        }}
+      >
+        Cancel
+      </button>
+    </div>
   </div>
 )}
 
+{/* Cropped Preview */}
+{croppedImage && (
+  <div style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}>
+    <div style={{ textAlign: "center" }}>
+      <h4>Cropped Preview:</h4>
+      <img
+        src={croppedImage}
+        alt="Cropped Preview"
+        style={{ maxWidth: "450px", borderRadius: "8px" }}
+      />
+    </div>
+  </div>
+)}
 
+{/* Submit Button */}
+<div style={{ display: "flex", justifyContent: "center", marginTop: "15px" }}>
+  <button
+    onClick={handleSubmit}
+    style={{
+      padding: "8px 16px",
+      borderRadius: "6px",
+      background: "#09c034ff",
+      color: "#fff",
+      border: "none",
+      cursor: "pointer",
+    }}
+  >
+    {!totlaloading ? "Submit Page Data" : "Loading"}
+  </button>
+</div>
 
-        {/* Submit Button */}
-        <button onClick={handleSubmit} style={{ padding: "8px 16px", marginTop: "15px" }}>
-          {!totlaloading ? "Submit Page Data" : "Loading"}
-        </button>
       </div>
 </div>
 );

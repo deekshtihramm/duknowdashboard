@@ -61,7 +61,7 @@ button {
   margin-top: 20px;
   padding: 10px;
   font-size: 16px;
-  background-color: #3498db;
+  background-color: #565c60;
   color: white;
   border: none;
   border-radius: 6px;
@@ -70,7 +70,7 @@ button {
 }
 
 button:hover {
-  background-color: #2980b9;
+  background-color: #5b7180;
 }
 
 /* Switch views (login/register) */
