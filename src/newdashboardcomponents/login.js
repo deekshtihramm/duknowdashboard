@@ -21,7 +21,7 @@ export default function ProfessionalLoginPage({ onLogin }) {
 
     try {
       setLoading(true);
-      const res = await fetch('http://localhost:4000/api/dashboard/signin', {
+      const res = await fetch('https://web.backend.duknow.in/api/dashboard/signin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email.trim(), password, remember }),
