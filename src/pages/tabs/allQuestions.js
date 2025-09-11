@@ -1,41 +1,74 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { BASE_URL } from "../../config";
 
 const AllImagesPage = () => {
   const [imagesByCategory, setImagesByCategory] = useState({});
   const [selectedCategory, setSelectedCategory] = useState("");
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState(""); // ✅ search term
+  const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchImages = async () => {
+    const fetchImagesStream = async () => {
       try {
-        const res = await axios.get("http://localhost:8000/api/realpages/image/all/images");
-        const images = res.data.images || [];
-        const grouped = images.reduce((acc, img) => {
-          if (!acc[img.category]) acc[img.category] = [];
-          acc[img.category].push({ url: img.url, pageNumber: img.pageNumber, _id: img._id || img.id });
-          return acc;
-        }, {});
-        setImagesByCategory(grouped);
+        const response = await fetch(`${BASE_URL}/api/realpages/image/all/images`);
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
 
-        const categories = Object.keys(grouped);
-        if (categories.length > 0) setSelectedCategory(categories[0]);
+        let buffer = "";
+        let first = true;
+        const grouped = {};
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+
+          // parse objects between { ... }
+          let startIdx;
+          while ((startIdx = buffer.indexOf("{")) !== -1 && buffer.indexOf("}", startIdx) !== -1) {
+            const endIdx = buffer.indexOf("}", startIdx);
+            const chunk = buffer.slice(startIdx, endIdx + 1);
+            buffer = buffer.slice(endIdx + 1);
+
+            try {
+              const img = JSON.parse(chunk);
+              if (img.url) {
+                if (!grouped[img.category]) grouped[img.category] = [];
+                grouped[img.category].push({
+                  url: img.url,
+                  pageNumber: img.pageNumber,
+                  _id: img.id || img._id
+                });
+
+                // ✅ update state incrementally
+                setImagesByCategory({ ...grouped });
+                if (first) {
+                  setSelectedCategory(img.category);
+                  first = false;
+                }
+              }
+            } catch (err) {
+              // ignore incomplete chunks
+            }
+          }
+        }
+
       } catch (err) {
-        console.error("Error fetching images:", err);
+        console.error("Error streaming images:", err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchImages();
+    fetchImagesStream();
   }, []);
 
   const fetchMongoPage = async (category, pageNumber) => {
     try {
-      const response = await fetch(`http://localhost:8000/api/realpages/mongo/${category}/pagenumber/${pageNumber}`);
+      const response = await fetch(`${BASE_URL}/api/realpages/mongo/${category}/pagenumber/${pageNumber}`);
       if (!response.ok) throw new Error("Page not found in MongoDB");
       return await response.json();
     } catch (err) {
@@ -46,7 +79,7 @@ const AllImagesPage = () => {
 
   const categories = Object.keys(imagesByCategory);
   const filteredImages = imagesByCategory[selectedCategory]?.filter((img) =>
-    img.pageNumber.toLowerCase().includes(searchTerm.toLowerCase())
+    img.pageNumber.toString().toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
 
   return (
@@ -57,7 +90,7 @@ const AllImagesPage = () => {
 
       {categories.length === 0 ? (
         loading ? (
-          <p style={{ color: "#777", fontSize: "16px" }}>Loading...</p>
+          <p style={{ color: "#777", fontSize: "16px" }}>Loading (streaming)...</p>
         ) : (
           <p style={{ color: "#777", fontSize: "16px" }}>No images found.</p>
         )

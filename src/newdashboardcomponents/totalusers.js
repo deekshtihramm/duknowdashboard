@@ -3,6 +3,8 @@ import NewHeader from "./newHeader.js";
 import NewSidebar from "./newSidebar.js";
 import "./Totalusers.css";
 import { useNavigate } from "react-router-dom";
+import { BASE_URL } from "../config";
+
 
 
 const Totalusers = () => {
@@ -18,7 +20,7 @@ const Totalusers = () => {
   const fetchData = async () => {
     try {
       // Fetch all user details
-      const usersResponse = await fetch("http://localhost:8000/api/normaluser/all");
+      const usersResponse = await fetch(`${BASE_URL}/api/normaluser/all`);
       const usersData = await usersResponse.json();
       console.log("Fetched users data:", usersData);
 
@@ -42,7 +44,7 @@ const Totalusers = () => {
   useEffect(() => {
     const fetchUserCount = async () => {
       try {
-        const res = await fetch("http://localhost:8000/api/dashboard/user/count");
+        const res = await fetch(`${BASE_URL}/api/dashboard/user/count`);
         const data = await res.json();
 
         // Store in sessionStorage

@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { BASE_URL } from "../config";
+
 
 const API_URL = "http://localhost:5000"; // Your backend URL
+
 
 export default function AuthPage() {
   const [email, setEmail] = useState("");

@@ -2,6 +2,8 @@ import React, { useEffect, useState, useRef, useCallback } from "react";
 import NewHeader from "./newHeader";
 import NewSidebar from "./newSidebar";
 import "./totalpostedquestions.css";
+import { BASE_URL } from "../config";
+
 
 const DEFAULT_CATEGORIES = [
   "general", "business", "food", "history", "movies", "mythology",
@@ -27,7 +29,7 @@ const TotalPostedQuestions = () => {
     setLoading(true);
     try {
       const res = await fetch(
-        `http://localhost:8000/api/realpages/questions/all?category=${category}&skip=${
+        `${BASE_URL}/api/realpages/questions/all?category=${category}&skip=${
           pageNumber * 30
         }&limit=30`
       );
@@ -96,7 +98,7 @@ const handleDelete = async (category, id) => {
   if (!window.confirm("Are you sure you want to delete this question?")) return;
 
   try {
-    const res = await fetch(`http://localhost:8000/api/realpages/${category}/${id}`, {
+    const res = await fetch(`${BASE_URL}/api/realpages/${category}/${id}`, {
       method: "DELETE",
     });
 

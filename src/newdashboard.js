@@ -3,6 +3,8 @@ import NewHeader from "./newdashboardcomponents/newHeader.js";
 import NewSidebar from "./newdashboardcomponents/newSidebar.js";
 import "./newdashboard.css";
 import UserSignupChart from "./UserSignupChart.js";
+import { BASE_URL } from "./config";
+
 
 
 const NewDashboard = ({ children }) => {
@@ -11,7 +13,6 @@ const NewDashboard = ({ children }) => {
     const [totalUsers, setTotalUsers] = useState(0);
     const [loading, setLoading] = useState(true);
     const [recentQuestions, setRecentQuestions] = useState([]);
-    const BASE_URL = "https://web.backend.duknow.in"; // ✅ Your backend base URL
 
     const getSessionOrFetch = async (key, url, setter) => {
       const cached = sessionStorage.getItem(key);
@@ -29,7 +30,7 @@ const NewDashboard = ({ children }) => {
    useEffect(() => {
   async function fetchUserCount() {
     try {
-      const response = await fetch("http://localhost:8000/api/normaluser/alluserscount");
+      const response = await fetch(`${BASE_URL}/api/normaluser/alluserscount`);
       const data = await response.json();
       const count = data?.usercount || 0;
       sessionStorage.setItem("totalUsers", JSON.stringify(count));
@@ -49,7 +50,7 @@ const NewDashboard = ({ children }) => {
   useEffect(() => {
     async function fetchPostedunQuestionsCount() {
       try {
-        const response = await fetch("http://localhost:8000/api/demo/allunpostedquestionscount");
+        const response = await fetch(`${BASE_URL}/api/demo/allunpostedquestionscount`);
         const data = await response.json();
         // Sum all category counts to get total unposted questions
         const total =
@@ -69,7 +70,7 @@ const NewDashboard = ({ children }) => {
   useEffect(() => {
     async function fetchPostedQuestionsCount() {
       try {
-        const response = await fetch("http://localhost:8000/api/realpages/count/getallcount");
+        const response = await fetch(`${BASE_URL}/api/realpages/count/getallcount`);
         const data = await response.json();
         // Sum all category counts to get total posted questions
         const total =

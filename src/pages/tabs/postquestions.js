@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom"; // for navigation
 import styles from "./postquestions.module.css";
+import { BASE_URL } from "../../config";
+
 
 
 const Postquestions = () => {
@@ -32,11 +34,12 @@ const Postquestions = () => {
     { value: "aptitude", label: "Aptitude" },
     { value: "coding", label: "Coding" },
     { value: "software", label: "Software"},
+    { value: "aitools",label:"AItools"},
   ];
 
   const fetchCounts = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/api/realpages/count/getallcount`);
+      const response = await fetch(`${BASE_URL}/api/realpages/count/getallcount`);
       const data = await response.json();
       setCounts(data || {});
     } catch (err) {
@@ -51,7 +54,7 @@ const Postquestions = () => {
     try {
       const latestPageNumber = counts[selectedCategory] || 0;
       const response = await fetch(
-        `http://localhost:8000/api/realpages/questions/all?category=${selectedCategory}&pageNumber=${latestPageNumber}&skip=${skipValue}&limit=${limit}`
+        `${BASE_URL}/api/realpages/questions/all?category=${selectedCategory}&pageNumber=${latestPageNumber}&skip=${skipValue}&limit=${limit}`
       );
       const data = await response.json();
 
@@ -73,7 +76,7 @@ const Postquestions = () => {
   const deleteQuestion = async (id) => {
     if (!window.confirm("Are you sure you want to delete this question?")) return;
     try {
-      const response = await fetch(`http://localhost:8000/api/realpages/${category}/${id}`, {
+      const response = await fetch(`${BASE_URL}/api/realpages/${category}/${id}`, {
         method: "DELETE",
       });
       if (response.ok) {
@@ -90,7 +93,7 @@ const Postquestions = () => {
 
   const fetchMongoPage = async (category, pageNumber) => {
   try {
-    const response = await fetch(`http://localhost:8000/api/realpages/mongo/${category}/pagenumber/${pageNumber}`);
+    const response = await fetch(`${BASE_URL}/api/realpages/mongo/${category}/pagenumber/${pageNumber}`);
     if (!response.ok) {
       throw new Error("Page not found in MongoDB");
     }

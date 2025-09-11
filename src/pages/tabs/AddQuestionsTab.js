@@ -54,7 +54,7 @@ const baseUrl = "https://web.backend.duknow.in"; // ✅ Your backend base URL
           "general", "space", "food", "movies", "sports", "history", "science",
           "technology", "gk", "current affairs", "polity", "computer", "geography",
           "economy", "reasoning", "aptitude", "english", "ethics", "environment",
-          "coding", "chemistry", "software", "companies",
+          "coding", "chemistry", "software", "companies","aitools"
         ].map((cat) => (
           <option key={cat}>{cat}</option>
         ))}

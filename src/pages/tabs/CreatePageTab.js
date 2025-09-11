@@ -6,6 +6,8 @@ import getCroppedImg from "../../utility/cropImage";
 // CORRECT
 import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
+import { BASE_URL } from "../../config";
+
 
 
 
@@ -17,7 +19,7 @@ const API_KEY = process.env.REACT_APP_GEMINI_API_KEY;
 
 const backend_URL = "https://web.backend.duknow.in"; // ✅ Base URL added
 
-const backend_URL2  = "http://localhost:8000";
+const backend_URL2  = "backend_URL";
 
 const backend_URL3 = "https://app.backend.duknow.in";
 
@@ -469,6 +471,8 @@ const [images, setImages] = useState([]);
     setImageUrl(extractedUrl);
   };
 
+const [preview, setPreview] = useState(null);
+
   //posting image in aws and posting page detials in fire store and mongodb
 const handleSubmit = async () => {
   if (!title || !matter || !longmatter) {
@@ -483,40 +487,33 @@ const handleSubmit = async () => {
   settotaloading(true);
   let uploadedImageUrl = imageUrl;
 
-if (imageUrl && croppedAreaPixels) {
-  try {
-    // 1. Crop → Blob
-    const blob = await getCroppedImg(imageUrl, croppedAreaPixels);
+ if (imageUrl && croppedAreaPixels) {
+    try {
+      // 1. Crop → File
+      const file = await getCroppedImg(imageUrl, croppedAreaPixels);
 
-    // 2. Blob → Base64
-    const base64Image = await new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(blob);
-      reader.onloadend = () => {
-        // Remove "data:image/jpeg;base64," prefix
-        const base64 = reader.result.split(",")[1];
-        resolve(base64);
-      };
-      reader.onerror = reject;
-    });
+      // ❌ Wrong (this causes [object File])
+      // setPreview(file);
 
-    // 3. Send as JSON
-    const res = await fetch(`${backend_URL2}/upload-image`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ base64Image }),
-    });
+      // ✅ Correct way for preview
+      const previewUrl = URL.createObjectURL(file);
+      setPreview(previewUrl);
 
-    const data = await res.json();
-    console.log("✅ Uploaded URL:", data.url);
+      // 2. Upload kosam
+      const formData = new FormData();
+      formData.append("image", file);
 
-    uploadedImageUrl = data.url || "";
-  } catch (err) {
-    console.error("Upload failed:", err);
+      const res = await fetch(`${backend_URL3}/upload-image`, {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+      console.log("✅ Uploaded URL:", data.url);
+    } catch (err) {
+      console.error("Upload failed:", err);
+    }
   }
-}
-
-
 
 
   if (uploadedImageUrl && uploadedImageUrl.startsWith("data:image")) {
@@ -594,13 +591,11 @@ if (imageUrl && croppedAreaPixels) {
 
   } catch (error) {
     console.error("Error submitting data:", error);
-    alert("Submission failed!");
+    toast.error("Upload Failed");
   } finally {
     settotaloading(false);
   }
 };
-
-
 
 // New states for Wikimedia
 const [wikimediaResults, setWikimediaResults] = useState([]);
@@ -754,8 +749,6 @@ useEffect(() => {
     setCategoryQuestions([]);
   }
 };
-
-
   //
   const handleDeleteQuestion = async () => {
     if (!currentQuestionId) return alert("No question to delete.");
@@ -813,8 +806,9 @@ useEffect(() => {
 const getCroppedImg = (imageSrc, pixelCrop) => {
   return new Promise((resolve, reject) => {
     const image = new Image();
-    image.crossOrigin = "anonymous"; // Avoid tainted canvas
+    image.crossOrigin = "anonymous"; // to avoid CORS taint
     image.src = imageSrc;
+
     image.onload = () => {
       const canvas = document.createElement("canvas");
       canvas.width = pixelCrop.width;
@@ -838,10 +832,12 @@ const getCroppedImg = (imageSrc, pixelCrop) => {
           reject(new Error("Canvas is empty"));
           return;
         }
-        const fileUrl = URL.createObjectURL(blob);
-        resolve(fileUrl);
-      }, "image/jpeg");
+        // ✅ Return actual Blob instead of objectURL
+        const file = new File([blob], "cropped.jpg", { type: "image/jpeg" });
+        resolve(file);
+      }, "image/jpeg", 0.9);
     };
+
     image.onerror = () => reject(new Error("Image load failed"));
   });
 };
@@ -880,12 +876,9 @@ return (
         <option value="coding">Coding</option>
         <option value="polity">Polity</option>
         <option value="companies">Companies</option>
+        <option value="aitools">AItools</option>
       </select>
     </div>
-
-    {/* <YourRoutesOrComponents />
-      <ToastContainer position="top-right" autoClose={3000} /> */}
-
     {/* Retrieved Questions */}
     {Array.isArray(categoryQuestions) && categoryQuestions.length > 0 && (
       <div style={{ border: "1px solid #ccc", padding: "5px", borderRadius: "5px" }}>
@@ -1108,7 +1101,6 @@ return (
         </button>
       </div>
     </div>
-
 
       <div className="image-section">
         <div className="image-controls">
@@ -1337,6 +1329,15 @@ return (
             />
           </div>
         )}
+
+       {preview && (
+  <div>
+    <h4>Cropped Preview:</h4>
+    <img src={preview} alt="Cropped Preview" style={{ maxWidth: "250px" }} />
+  </div>
+)}
+
+
 
         {/* Submit Button */}
         <button onClick={handleSubmit} style={{ padding: "8px 16px", marginTop: "15px" }}>

@@ -3,6 +3,8 @@ import { useParams } from "react-router-dom";
 import NewHeader from "./newHeader";
 import NewSidebar from "./newSidebar";
 import "./UserDetails.css";
+import { BASE_URL } from "../config";
+
 
 const UserDetails = () => {
   const { id } = useParams();
@@ -13,7 +15,7 @@ const UserDetails = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch(`http://localhost:8000/api/normaluser/${id}`);
+        const res = await fetch(`${BASE_URL}/api/normaluser/${id}`);
         const data = await res.json();
         setUser(data);
         setLoading(false);

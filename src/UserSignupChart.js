@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from "chart.js";
+import { BASE_URL } from "./config";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
@@ -11,7 +12,7 @@ const UserSignupChart = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch("http://localhost:8000/api/normaluser/allusers-createdAt");
+        const res = await fetch(`${BASE_URL}/api/normaluser/allusers-createdAt`);
         const data = await res.json();
 
         const today = new Date();

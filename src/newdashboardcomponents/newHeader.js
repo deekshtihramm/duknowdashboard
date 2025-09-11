@@ -36,7 +36,6 @@ const titleStyle = {
   WebkitTextFillColor: "transparent"
 };
 
-
   const rightSectionStyle = {
     display: "flex",
     alignItems: "center",

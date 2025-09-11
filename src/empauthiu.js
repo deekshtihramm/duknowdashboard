@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import './ampauthui.css';
 import { useNavigate } from 'react-router-dom';
+import { BASE_URL } from "./config";
+
 
 const Empauthui = () => {
   const [view, setView] = useState('login');
