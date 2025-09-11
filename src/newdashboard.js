@@ -4,6 +4,7 @@ import NewSidebar from "./newdashboardcomponents/newSidebar.js";
 import "./newdashboard.css";
 import UserSignupChart from "./UserSignupChart.js";
 import { BASE_URL } from "./config";
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -13,6 +14,16 @@ const NewDashboard = ({ children }) => {
     const [totalUsers, setTotalUsers] = useState(0);
     const [loading, setLoading] = useState(true);
     const [recentQuestions, setRecentQuestions] = useState([]);
+    const navigate = useNavigate();
+
+
+      useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/"); // redirect if not logged in
+    }
+  }, [navigate]);
+
 
     const getSessionOrFetch = async (key, url, setter) => {
       const cached = sessionStorage.getItem(key);
