@@ -709,7 +709,7 @@ useEffect(() => {
     setMatterHindi(" ");
     setLongmatterHindi(" ");
 
-    const response = await fetch(`${backend_URL}/api/randomquestions/random/${category}`);
+    const response = await fetch(`${backend_URL}/api/random/random/${category}`);
     const data = await response.json();
     const questions = Array.isArray(data)
       ? data
