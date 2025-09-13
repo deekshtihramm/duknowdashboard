@@ -46,7 +46,6 @@
 .controls {
   display: flex;
   gap: 10px;
-  margin-bottom: 15px;
 }
 
 .search {
@@ -54,7 +53,8 @@
   border: 1px solid #ccc;
   border-radius: 5px;
   flex-grow: 1;
-  font-size: 14px;
+  font-size: 24px;
   color: #000000;
   height: 15px;
+  padding-inline: 25px;
 }
