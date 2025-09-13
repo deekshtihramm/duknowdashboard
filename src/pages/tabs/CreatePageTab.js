@@ -750,7 +750,7 @@ useEffect(() => {
 
     try {
       const res = await fetch(
-        `${BASE_URL}/api/randomquestions/delete/${currentQuestionId}`,
+        `${BASE_URL}/api/random/delete/${selectedPageCategory}/${currentQuestionId}`,
         { method: "DELETE" }
       );
 
