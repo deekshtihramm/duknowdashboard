@@ -564,7 +564,7 @@ const handleSubmit = async () => {
     // 🔑 5. Auto-delete question (if needed)
     if (currentQuestionId) {
       try {
-        await fetch(`${backend_URL}/api/demo/${selectedPageCategory}/pagenumber/${CurrentQuestionPageNumber}`, {
+        await fetch(`${backend_URL}/api/random/delete/${selectedPageCategory}/${currentQuestionId}`, {
           method: "DELETE",
         });
         console.log(`Question ${currentQuestionId} deleted successfully.`);
@@ -727,15 +727,15 @@ useEffect(() => {
       setCurrentQuestionPageNumber(firstQuestion.pageNumber);
 
       // Auto-delete using category & pageNumber
-      try {
-        await fetch(
-          `${backend_URL}/api/randomquestions/${category}/${firstQuestion.pageNumber}`,
-          { method: "DELETE" }
-        );
-        console.log(`Question from page ${firstQuestion.pageNumber} deleted for category ${category}`);
-      } catch (deleteErr) {
-        console.error("Auto-delete failed:", deleteErr);
-      }
+      // try {
+      //   await fetch(
+      //     `${backend_URL}/api/randomquestions/${category}/${firstQuestion.pageNumber}`,
+      //     { method: "DELETE" }
+      //   );
+      //   console.log(`Question from page ${firstQuestion.pageNumber} deleted for category ${category}`);
+      // } catch (deleteErr) {
+      //   console.error("Auto-delete failed:", deleteErr);
+      // }
     }
   } catch (error) {
     console.error("Fetch failed:", error);
@@ -750,7 +750,7 @@ useEffect(() => {
 
     try {
       const res = await fetch(
-        `${BASE_URL}/api/random/delete/${selectedPageCategory}/${currentQuestionId}`,
+        `${backend_URL}/api/random/delete/${selectedPageCategory}/${currentQuestionId}`,
         { method: "DELETE" }
       );
 

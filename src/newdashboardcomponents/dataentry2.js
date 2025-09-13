@@ -3,8 +3,6 @@ import NewHeader from "./newHeader";
 import NewSidebar from "./newSidebar";
 import DataEntrySidebar from "../components/DataEntrySidebar";
 import '../pages/DataEntry.css';
-
-
 import AddQuestionsTab from "../pages/tabs/AddQuestionsTab";
 import AllQuestionsTab from "../pages/tabs/AllQuestionsTab";
 import CreatePageTab from "../pages/tabs/CreatePageTab.js";
@@ -12,10 +10,6 @@ import SubmitTab from "../pages/tabs/postquestions.js";
 import MockTestQuestion from "../pages/tabs/mocktest.js";
 import QuestionsList from "../pages/tabs/allQuestions.js";
 import { BASE_URL } from "../config";
-             
-
-
-
 import "./UserDetails.css";
 
 const UserDetails = () => {
@@ -26,8 +20,6 @@ const UserDetails = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [filterCategory, setFilterCategory] = useState("All");
     const [allQuestions, setAllQuestions] = useState([]);
-    
-
 
       const fetchAllQuestions = async () => {
         try {
@@ -109,10 +101,10 @@ const UserDetails = () => {
       }, [activeTab]);
     
      const filteredQuestions = allQuestions
-  .filter((q) => filterCategory === "All" || q.category === filterCategory)
-  .filter((q) =>
-    (q.question || "").toLowerCase().includes(searchTerm.toLowerCase())
-  );
+      .filter((q) => filterCategory === "All" || q.category === filterCategory)
+      .filter((q) =>
+        (q.question || "").toLowerCase().includes(searchTerm.toLowerCase())
+      );
 
       const groupedQuestions = filteredQuestions.reduce((acc, curr) => {
         if (!acc[curr.category]) acc[curr.category] = [];
@@ -122,9 +114,6 @@ const UserDetails = () => {
     
       const uniqueCategories = ["All", ...new Set(allQuestions.map((q) => q.category))];
     
-
-
-
   return (
     <div className="user-details">
       <NewHeader />
