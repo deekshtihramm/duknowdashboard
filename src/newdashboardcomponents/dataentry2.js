@@ -31,7 +31,7 @@ const UserDetails = () => {
 
       const fetchAllQuestions = async () => {
         try {
-          const response = await fetch(`${BASE_URL}/api/randomquestions/`);
+          const response = await fetch(`http://localhost:4000/api/random/`);
           const data = await response.json();
           if (response.ok) setAllQuestions(data);
           else alert("Failed to fetch questions");
@@ -108,10 +108,12 @@ const UserDetails = () => {
         if (activeTab === "#contact") fetchAllQuestions();
       }, [activeTab]);
     
-      const filteredQuestions = allQuestions
-        .filter((q) => filterCategory === "All" || q.category === filterCategory)
-        .filter((q) => q.question.toLowerCase().includes(searchTerm.toLowerCase()));
-    
+     const filteredQuestions = allQuestions
+  .filter((q) => filterCategory === "All" || q.category === filterCategory)
+  .filter((q) =>
+    (q.question || "").toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
       const groupedQuestions = filteredQuestions.reduce((acc, curr) => {
         if (!acc[curr.category]) acc[curr.category] = [];
         acc[curr.category].push(curr);

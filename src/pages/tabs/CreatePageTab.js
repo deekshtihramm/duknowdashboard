@@ -15,7 +15,7 @@ const API_KEY = process.env.REACT_APP_GEMINI_API_KEY;
 
 const backend_URL = "https://web.backend.duknow.in"; // ✅ Base URL added
 
-const backend_URL2  = "http://localhost:8000";
+const backend_URL2  = "https://web.backend.duknow.in";
 
 const backend_URL3 = "https://app.backend.duknow.in";
 
@@ -64,6 +64,7 @@ useEffect(() => {
   const [longmatter, setLongmatter] = useState("");
   const [categoryQuestions, setCategoryQuestions] = useState([]);
   const [currentQuestionId, setCurrentQuestionId] = useState(null);
+  const [CurrentQuestionPageNumber, setCurrentQuestionPageNumber] = useState(null);
   const [imageFile, setImageFile] = useState(null);
   const [selectedPageCategory, setSelectedPageCategory] = useState("");
   const [titleTelugu, setTitleTelugu] = useState("");
@@ -559,15 +560,11 @@ const handleSubmit = async () => {
     ]);
 
     // success UI
-    setSuccessMessage("Page data submitted successfully!");
-    toast.success("Saved successfully!");
-    window.scrollTo({ top: 0, behavior: "smooth" });
-    setTimeout(() => setSuccessMessage(""), 3000);
-
+    
     // 🔑 5. Auto-delete question (if needed)
     if (currentQuestionId) {
       try {
-        await fetch(`${BASE_URL}/api/randomquestions/delete/${currentQuestionId}`, {
+        await fetch(`${backend_URL}/api/demo/${selectedPageCategory}/pagenumber/${CurrentQuestionPageNumber}`, {
           method: "DELETE",
         });
         console.log(`Question ${currentQuestionId} deleted successfully.`);
@@ -575,7 +572,11 @@ const handleSubmit = async () => {
         console.error("Auto-delete failed:", deleteErr);
       }
     }
-
+    
+    setSuccessMessage("Page data submitted successfully!");
+    toast.success("Saved successfully!");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    setTimeout(() => setSuccessMessage(""), 3000);
     // 🔑 6. Refresh category questions
     fetchCategoryQuestions(selectedPageCategory);
 
@@ -723,6 +724,7 @@ useEffect(() => {
       const firstQuestion = questions[0];
       setTitle(firstQuestion.question);
       setCurrentQuestionId(firstQuestion._id);
+      setCurrentQuestionPageNumber(firstQuestion.pageNumber);
 
       // Auto-delete using category & pageNumber
       try {

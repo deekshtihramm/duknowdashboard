@@ -19,8 +19,9 @@ const UserSignupChart = () => {
         let startDate;
 
         // Determine start date based on selected timeframe
+
         if (timeframe === "7") startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 6);
-        else if (timeframe === "30") startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 29);
+        else if (timeframe === "30") startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 28);
         else if (timeframe === "365") startDate = new Date(today.getFullYear() - 1, today.getMonth(), today.getDate() + 1); 
         else startDate = new Date(0); // all time
 
@@ -66,7 +67,7 @@ const UserSignupChart = () => {
               label: "New Users",
               data: counts,
               borderColor: "rgba(75, 192, 192, 1)",
-              backgroundColor: "rgba(75, 192, 192, 0.2)",
+              backgroundColor: "rgba(75, 192, 192, 1)",
               fill: true,
               tension: 0.3
             }
