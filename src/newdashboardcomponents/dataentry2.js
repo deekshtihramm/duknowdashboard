@@ -23,7 +23,7 @@ const UserDetails = () => {
 
       const fetchAllQuestions = async () => {
         try {
-          const response = await fetch(`http://localhost:4000/api/random/`);
+          const response = await fetch(`${BASE_URL}/api/random/`);
           const data = await response.json();
           if (response.ok) setAllQuestions(data);
           else alert("Failed to fetch questions");
