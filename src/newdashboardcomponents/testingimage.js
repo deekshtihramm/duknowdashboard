@@ -424,7 +424,7 @@ useEffect(() => {
     
       // Quick reset
       const resetAll = () => {
-        setText("Hello Duknow \nCreate awesome images!");
+        setText("Hi Duknow guys \nCreate awesome images!");
         setFontFamily("Georgia");
         setFontSize(64);
         setFontColor("#111111");
