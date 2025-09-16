@@ -1083,11 +1083,11 @@ return (
 
       <div className="image-section">
         <div className="image-controls">
-          <button className="ai-button"
+          {/* <button className="ai-button"
           //  onClick={handleAIImage}
            >
-            {/* {loading.image ? "Generating..." : "AI Creation (4 Images)"} */}
-          </button>
+            {loading.image ? "Generating..." : "AI Creation (4 Images)"}
+          </button> */}
 
           <label>URL:</label>
           <input
@@ -1154,7 +1154,7 @@ return (
   </button>
 </div> */}
         {/* AI Generated Images */}
-          <h3>AI images</h3>
+          {/* <h3>AI images</h3>
         <div className="image-frame-grid">
           {images.length > 0 ? (
             images.map((img, index) => (
@@ -1172,7 +1172,7 @@ return (
           ) : (
             <p>No AI images generated yet</p>
           )}
-        </div>
+        </div> */}
 
         {/* Unsplash Images */}
         <div className="unsplash-gallery">
