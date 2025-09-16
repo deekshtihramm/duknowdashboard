@@ -324,6 +324,9 @@ const handleExplain = async (text, setter, language, type, fieldKey) => {
     setLongmatterHindi("");
   }
 
+  setter(""); 
+
+
   try {
     const response = await fetch(
       `${GEMINI_BASE_URL}v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`,
@@ -1003,7 +1006,7 @@ return (
         <button
             onClick={() =>
               handleExplain(
-                `${selectedLongPrompt ? selectedLongPrompt + ": " : ""}${title}`,
+                `${selectedPrompt ? selectedPrompt + ": " : ""}${title}`,
                 setLongmatter,
                 "English",
                 "long",
@@ -1036,8 +1039,8 @@ return (
         <button
           onClick={() => handleExplain(matter, setMatterTelugu, "Telugu", "short")}
         >
-          {loading.shortTel ? "Generating..." : "AI Explanation (Short - Telugu)"}
-        </button>
+                  {loading.shortEng ? "Generating..." : "AI Explanation (Short)"}
+                </button>
 
         <label>Long Matter (Telugu):</label>
 
@@ -1057,7 +1060,7 @@ return (
         <button
           onClick={() => handleExplain(matter, setLongmatterTelugu, "Telugu", "long")}
         >
-          {loading.longTel ? "Generating..." : "AI Explanation (Long - Telugu)"}
+        {loading.longEng ? "Generating..." : "AI Explanation (Long)"}
         </button>
       </div>
 
@@ -1081,7 +1084,7 @@ return (
         <button
           onClick={() => handleExplain(matter, setMatterHindi, "Hindi", "short")}
         >
-          {loading.shortHin ? "Generating..." : "AI Explanation (Short - Hindi)"}
+                  {loading.shortEng ? "Generating..." : "AI Explanation (Short)"}
         </button>
 
         <label>Long Matter (Hindi):</label>
@@ -1102,7 +1105,7 @@ return (
         <button
           onClick={() => handleExplain(matter, setLongmatterHindi, "Hindi", "long")}
         >
-          {loading.longHin ? "Generating..." : "AI Explanation (Long - Hindi)"}
+        {loading.longEng ? "Generating..." : "AI Explanation (Long)"}
         </button>
       </div>
     </div>
