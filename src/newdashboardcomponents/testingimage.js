@@ -31,7 +31,7 @@ const AdvancedTextToImage = () => {
       const [canvasSize, setCanvasSize] = useState(DEFAULT_CANVAS);
     
       // Text states
-      const [text, setText] = useState("Hello Duknow \nMake awesome posters!");
+      const [text, setText] = useState("Hi DuKnow Guys \nCreate awesome Image!");
       const [fontFamily, setFontFamily] = useState("Georgia");
       const [fontSize, setFontSize] = useState(64);
       const [fontColor, setFontColor] = useState("#111111");
