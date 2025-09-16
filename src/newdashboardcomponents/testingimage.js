@@ -460,7 +460,7 @@ useEffect(() => {
 
       <div style={{ display: "flex", gap: 18 }}>
         {/* Left: controls */}
-        <div style={{ width: 380, maxHeight: "100vh", overflowY: "auto", padding: 12, borderRadius: 8, border: "1px solid #eee" }}>
+        <div style={{ width: 380, maxHeight: "140vh", overflowY: "auto", padding: 12, borderRadius: 8, border: "1px solid #eee" }}>
           <label style={{ fontWeight: "600" }}>Text (multi-line):</label>
           <textarea
             rows={6}
