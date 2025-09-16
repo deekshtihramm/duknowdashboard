@@ -12,7 +12,6 @@ const GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/";
 
 const API_KEY = process.env.REACT_APP_GEMINI_API_KEY;
 
-
 const backend_URL = "https://web.backend.duknow.in"; // ✅ Base URL added
 
 const backend_URL2  = "https://web.backend.duknow.in";
@@ -149,43 +148,43 @@ useEffect(() => {
   return () => { isMounted = false; };
 }, [title]);
 
-useEffect(() => {
-  if (!matter && !longmatter) return; // Only run when there is content
+// useEffect(() => {
+//   if (!matter && !longmatter) return; // Only run when there is content
 
-    const autoTranslate = async () => {
-      try {
-        if (matter) {
-          const [matterTel, matterHin] = await Promise.all([
-            translate(matter, "Telugu","shortTelugu"),
-            translate(matter, "Hindi","shortHindi"),
-          ]);
-          setMatterTelugu(matterTel);
-          setMatterHindi(matterHin);
-        }
+//     const autoTranslate = async () => {
+//       try {
+//         if (matter) {
+//           const [matterTel, matterHin] = await Promise.all([
+//             translate(matter, "Telugu","shortTelugu"),
+//             translate(matter, "Hindi","shortHindi"),
+//           ]);
+//           setMatterTelugu(matterTel);
+//           setMatterHindi(matterHin);
+//         }
   
-        if (longmatter) {
-          const [longTel, longHin] = await Promise.all([
-            translate(longmatter, "Telugu","longTelugu"),
-            translate(longmatter, "Hindi","longHindi"),
-          ]);
-          setLongmatterTelugu(longTel);
-          setLongmatterHindi(longHin);
-        }
-      } catch (error) {
-        console.error("Auto translation failed:", error);
-      }
-    };
-    autoTranslate();
-     try {
-          setMatterTelugu(mongoData.matterTelugu);
-          setMatterHindi(mongoData.matterHindi);
-          setLongmatterTelugu(mongoData.longmatterTelugu);
-          setLongmatterHindi(mongoData.longmatterHindi);
-        } catch (error) {
-          console.error("Auto translation failed:", error);
-        }
+//         if (longmatter) {
+//           const [longTel, longHin] = await Promise.all([
+//             translate(longmatter, "Telugu","longTelugu"),
+//             translate(longmatter, "Hindi","longHindi"),
+//           ]);
+//           setLongmatterTelugu(longTel);
+//           setLongmatterHindi(longHin);
+//         }
+//       } catch (error) {
+//         console.error("Auto translation failed:", error);
+//       }
+//     };
+//     autoTranslate();
+//      try {
+//           setMatterTelugu(mongoData.matterTelugu);
+//           setMatterHindi(mongoData.matterHindi);
+//           setLongmatterTelugu(mongoData.longmatterTelugu);
+//           setLongmatterHindi(mongoData.longmatterHindi);
+//         } catch (error) {
+//           console.error("Auto translation failed:", error);
+//         }
         
-}, [matter, longmatter]); // Runs whenever English matter changes
+// }, [matter, longmatter]); // Runs whenever English matter changes
 
 // Gemini setup
 // const genAI = new GoogleGenerativeAI(process.env.REACT_APP_GEMINI_API_KEY);
@@ -316,14 +315,14 @@ const handleTranslate = async (text, lang, setter,content) => {
 const handleExplain = async (text, setter, language, type, fieldKey) => {
   if (!text) return "";
   setLoading(prev => ({ ...prev, [fieldKey]: true }));
-if(type === "short"){
+
+  if (type === "short") {
     setMatterHindi("");
-    setMatterTelugu(" ");
-}
-else {
-  setLongmatterTelugu(" ");
-  setLongmatterHindi("");
-}
+    setMatterTelugu("");
+  } else {
+    setLongmatterTelugu("");
+    setLongmatterHindi("");
+  }
 
   try {
     const response = await fetch(
@@ -337,7 +336,10 @@ else {
               role: "user",
               parts: [
                 {
-                  text: `${type === "short" ? "Provide a concise but complete answer to the following question in under 1000 characters above 500 characters" : "Provide a detailed response to the following question using 4000 to 5000 characters. Avoid unnecessary empty lines or spaces"} about "${text}" in ${language}`
+                  text:
+                    type === "short"
+                      ? `Provide a concise but complete answer to the following question in 500–1000 characters:\n\n${text}\n\nin ${language}`
+                      : `Provide a detailed response to the following question using 4000–5000 characters (no extra empty lines):\n\n${text}\n\nin ${language}`
                 }
               ]
             }
@@ -345,9 +347,33 @@ else {
         }),
       }
     );
+
     const data = await response.json();
-    const result = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
+    const result =
+      data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
+
+    // save English result
     setter(result);
+
+    // 🌍 now translate & set
+    if (type === "short") {
+      const tel = await translate(result, "Telugu", "shortTelugu");
+      const hin = await translate(result, "Hindi", "shortHindi");
+      setMatterTelugu(tel);
+      setMatterHindi(hin);
+    } else {
+      const tel = await translate(result, "Telugu", "longTelugu");
+      const hin = await translate(result, "Hindi", "longHindi");
+      setLongmatterTelugu(tel);
+      setLongmatterHindi(hin);
+    }
+
+    // titles translate separately if needed
+    const tTel = await translate(title, "Telugu", "titleTelugu");
+    const tHin = await translate(title, "Hindi", "titleHindi");
+    setTitleTelugu(tTel);
+    setTitleHindi(tHin);
+
     return result;
   } catch (error) {
     console.error(`handleExplain (${language}, ${type}) error:`, error);
