@@ -89,13 +89,9 @@ const [crop, setCrop] = useState({ x: 0, y: 0 });
 const [zoom, setZoom] = useState(1);
 const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
 const [showCropper, setShowCropper] = useState(false);
-
-  const [croppedImage, setCroppedImage] = useState(null);
-
-  const [cropping, setCropping] = useState(false);
-
-
-  const [loading, setLoading] = useState({
+const [croppedImage, setCroppedImage] = useState(null);
+const [cropping, setCropping] = useState(false);
+const [loading, setLoading] = useState({
   shortEng: false,
   longEng: false,
   titleTelugu: false,
@@ -106,7 +102,6 @@ const [showCropper, setShowCropper] = useState(false);
   longmatterHindi: false,
   image: false
 });
-      
   // Add this inside the CreatePageTab component
 useEffect(() => {
   if (!title) return;
@@ -115,7 +110,7 @@ useEffect(() => {
 
   (async () => {
     try {
-      handleAIImage(); // Start image generation (async, non-blocking)
+      // handleAIImage(); // Start image generation (async, non-blocking)
 
       const [shortEng, longEng] = await Promise.all([
         handleExplain(title, setMatter, "English", "short", "shortEng"),
@@ -192,7 +187,6 @@ useEffect(() => {
         
 }, [matter, longmatter]); // Runs whenever English matter changes
 
-
 // Gemini setup
 // const genAI = new GoogleGenerativeAI(process.env.REACT_APP_GEMINI_API_KEY);
 const handleTranslate = async (text, lang, setter,content) => {
@@ -200,77 +194,75 @@ const handleTranslate = async (text, lang, setter,content) => {
   setter(translated);
 };
 
+// const BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict";
 
-const BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict";
+// const handleAIImage = async (type) => {
+//   setLoading(prev => ({ ...prev, image: true }));
 
-const handleAIImage = async (type) => {
-  setLoading(prev => ({ ...prev, image: true }));
+//   let customPrompt = "";
+//   switch (type) {
+//     case "text":
+//       customPrompt = `Generate only a clean, text-based image for: ${title}`;
+//       break;
+//     case "logo":
+//       customPrompt = `Generate a professional and minimal company logo for: ${title}`;
+//       break;
+//     case "title":
+//       customPrompt = `Generate an artistic title card with stylish fonts for: ${title}`;
+//       break;
+//     case "programming":
+//       customPrompt = `Generate a high-quality programming/code themed image for: ${title}`;
+//       break;
+//     case "icon":
+//       customPrompt = `Generate a minimal app icon for: ${title}`;
+//       break;
+//     case "banner":
+//       customPrompt = `Generate a wide banner-style image for: ${title}`;
+//       break;
+//     case "poster":
+//       customPrompt = `Generate a creative poster design for: ${title}`;
+//       break;
+//     case "background":
+//       customPrompt = `Generate a high-quality background wallpaper for: ${title}`;
+//       break;
+//     case "3d":
+//       customPrompt = `Generate a realistic 3D styled render of: ${title}`;
+//       break;
+//     case "cartoon":
+//       customPrompt = `Generate a cartoon/comic styled illustration of: ${title}`;
+//       break;
+//     case "realistic":
+//       customPrompt = `Generate a realistic high-quality photo of: ${title}`;
+//       break;
+//     default:
+//       customPrompt = `Create a high-quality image of: ${title}`;
+//   }
 
-  let customPrompt = "";
-  switch (type) {
-    case "text":
-      customPrompt = `Generate only a clean, text-based image for: ${title}`;
-      break;
-    case "logo":
-      customPrompt = `Generate a professional and minimal company logo for: ${title}`;
-      break;
-    case "title":
-      customPrompt = `Generate an artistic title card with stylish fonts for: ${title}`;
-      break;
-    case "programming":
-      customPrompt = `Generate a high-quality programming/code themed image for: ${title}`;
-      break;
-    case "icon":
-      customPrompt = `Generate a minimal app icon for: ${title}`;
-      break;
-    case "banner":
-      customPrompt = `Generate a wide banner-style image for: ${title}`;
-      break;
-    case "poster":
-      customPrompt = `Generate a creative poster design for: ${title}`;
-      break;
-    case "background":
-      customPrompt = `Generate a high-quality background wallpaper for: ${title}`;
-      break;
-    case "3d":
-      customPrompt = `Generate a realistic 3D styled render of: ${title}`;
-      break;
-    case "cartoon":
-      customPrompt = `Generate a cartoon/comic styled illustration of: ${title}`;
-      break;
-    case "realistic":
-      customPrompt = `Generate a realistic high-quality photo of: ${title}`;
-      break;
-    default:
-      customPrompt = `Create a high-quality image of: ${title}`;
-  }
+//   const body = {
+//     instances: [{ prompt: customPrompt }],
+//     parameters: { sampleCount: 4 },
+//   };
 
-  const body = {
-    instances: [{ prompt: customPrompt }],
-    parameters: { sampleCount: 4 },
-  };
+//   try {
+//     const response = await fetch(`${BASE_URL}?key=${API_KEY}`, {
+//       method: "POST",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify(body),
+//     });
+//     const data = await response.json();
 
-  try {
-    const response = await fetch(`${BASE_URL}?key=${API_KEY}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    const data = await response.json();
+//     const newImages =
+//       data?.predictions?.map(
+//         (p) => `data:image/png;base64,${p.bytesBase64Encoded}`
+//       ) || [];
 
-    const newImages =
-      data?.predictions?.map(
-        (p) => `data:image/png;base64,${p.bytesBase64Encoded}`
-      ) || [];
-
-    setImages((prevImages) => [...newImages, ...prevImages]);
-  } catch (error) {
-    console.error("Image generation failed:", error);
-  } finally {
-    setLoading((prev) => ({ ...prev, image: false }));
-  }
-};
-
+//     setImages((prevImages) => [...newImages, ...prevImages]);
+//   } catch (error) {
+//     console.error("Image generation failed:", error);
+//   } finally {
+//     setLoading((prev) => ({ ...prev, image: false }));
+//   }
+// };
 
 // Compress base64 image to target size/quality
   const compressImage = (base64, maxSizeKB = 500) =>
@@ -452,7 +444,6 @@ const [images, setImages] = useState([]);
 //   return data?.candidates?.[0]?.content?.parts?.[0]?.text?.split("\n") || [];
 // };
 
-
   const handleImageUrlChange = (e) => {
     let input = e.target.value;
     let extractedUrl = input;
@@ -587,7 +578,6 @@ const handleSubmit = async () => {
     settotaloading(false);
   }
 };
-
 
 // New states for Wikimedia
 const [wikimediaResults, setWikimediaResults] = useState([]);
@@ -1093,8 +1083,10 @@ return (
 
       <div className="image-section">
         <div className="image-controls">
-          <button className="ai-button" onClick={handleAIImage}>
-            {loading.image ? "Generating..." : "AI Creation (4 Images)"}
+          <button className="ai-button"
+          //  onClick={handleAIImage}
+           >
+            {/* {loading.image ? "Generating..." : "AI Creation (4 Images)"} */}
           </button>
 
           <label>URL:</label>
@@ -1126,7 +1118,7 @@ return (
           />
         </div>
 
-     <div style={{ margin: "10px 0" }}>
+     {/* <div style={{ margin: "10px 0" }}>
   <button onClick={() => handleAIImage("text")} className="btn" style={{ marginRight: 8 }}>
     Text Image
   </button>
@@ -1160,7 +1152,7 @@ return (
   <button onClick={() => handleAIImage("realistic")} className="btn">
     Realistic Photo
   </button>
-</div>
+</div> */}
         {/* AI Generated Images */}
           <h3>AI images</h3>
         <div className="image-frame-grid">

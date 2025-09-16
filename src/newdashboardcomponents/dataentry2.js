@@ -57,7 +57,7 @@ const UserDetails = () => {
         };
     
         try {
-          const response = await fetch(`${BASE_URL}/api/randomquestions/add`, {
+          const response = await fetch(`${BASE_URL}/api/random/add`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(questionPayload),
