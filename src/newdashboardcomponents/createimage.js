@@ -2,7 +2,6 @@ import React, { useRef, useState, useEffect } from "react";
 import NewHeader from "./newHeader";
 import NewSidebar from "./newSidebar";
 import "./UserDetails.css";
-import image1 from '../images/image.png'
     
     const DEFAULT_CANVAS = { width: 1200, height: 630 }; // default poster size
     
@@ -31,7 +30,7 @@ const AdvancedTextToImage = () => {
       const [canvasSize, setCanvasSize] = useState(DEFAULT_CANVAS);
     
       // Text states
-      const [text, setText] = useState("Hello Duknow \nMake awesome posters!");
+      const [text, setText] = useState("Hello Duknow \nreate awesome images!");
       const [fontFamily, setFontFamily] = useState("Georgia");
       const [fontSize, setFontSize] = useState(64);
       const [fontColor, setFontColor] = useState("#111111");
@@ -79,32 +78,16 @@ const AdvancedTextToImage = () => {
       const dragRef = useRef({ startX: 0, startY: 0, originX: 0, originY: 0, type: null, stickerId: null });
     
       // Update objectURL when bgImageFile changes
-     // --- Add this near top ---
-const defaultBgImages = [
-  image1,
-  "/images/bg2.jpg",
-  "/images/bg3.jpg",
-  "/images/bg4.jpg",
-]; // public folder lo petti path ichhi
-
-// ---- Inside Component ----
-
-// state add cheyyali
-const [selectedDefaultBg, setSelectedDefaultBg] = useState(defaultBgImages[0]);
-
-// update useEffect for bgImageObjectURL
-useEffect(() => {
-  if (bgImageFile) {
-    const url = URL.createObjectURL(bgImageFile);
-    setBgImageObjectURL(url);
-    return () => URL.revokeObjectURL(url);
-  } else if (selectedDefaultBg) {
-    setBgImageObjectURL(selectedDefaultBg);
-  } else {
-    setBgImageObjectURL(null);
-  }
-}, [bgImageFile, selectedDefaultBg]);
-
+      useEffect(() => {
+        if (bgImageFile) {
+          const url = URL.createObjectURL(bgImageFile);
+          setBgImageObjectURL(url);
+          return () => URL.revokeObjectURL(url);
+        } else {
+          setBgImageObjectURL(null);
+        }
+      }, [bgImageFile]);
+    
       // Draw function
       const draw = async () => {
         const canvas = canvasRef.current;
@@ -597,88 +580,6 @@ useEffect(() => {
 
           <div>
             <label style={{ fontWeight: 600 }}>Background</label>
-            <hr style={{ margin: "12px 0" }} />
-
-            <div>
-              <label style={{ fontWeight: 600 }}>Background</label>
-              <select
-                value={bgMode}
-                onChange={(e) => setBgMode(e.target.value)}
-                style={{ marginLeft: 8 }}
-              >
-                <option value="solid">Solid</option>
-                <option value="linear">Linear</option>
-                <option value="radial">Radial</option>
-                <option value="image">Image</option>
-              </select>
-
-              {bgMode === "solid" && (
-                <div style={{ marginTop: 8 }}>
-                  <label>Color</label>
-                  <input
-                    type="color"
-                    value={bgColor}
-                    onChange={(e) => setBgColor(e.target.value)}
-                    style={{ marginLeft: 8 }}
-                  />
-                </div>
-              )}
-
-              {bgMode === "linear" || bgMode === "radial" ? (
-                <div style={{ marginTop: 8 }}>
-                  <label>Color 1</label>
-                  <input type="color" value={bgColor} onChange={(e) => setBgColor(e.target.value)} />
-                  <label style={{ marginLeft: 8 }}>Color 2</label>
-                  <input type="color" value={bgColor2} onChange={(e) => setBgColor2(e.target.value)} />
-                  {bgMode === "linear" && (
-                    <div style={{ marginTop: 8 }}>
-                      <label>Angle</label>
-                      <input
-                        type="number"
-                        value={bgAngle}
-                        onChange={(e) => setBgAngle(Number(e.target.value))}
-                        style={{ width: 80, marginLeft: 8 }}
-                      />
-                    </div>
-                  )}
-                </div>
-              ) : null}
-
-              {bgMode === "image" && (
-                <div style={{ marginTop: 8 }}>
-                  <label>Upload Image</label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => setBgImageFile(e.target.files[0] || null)}
-                  />
-
-                  <p style={{ marginTop: 8 }}>Or choose default:</p>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                    {defaultBgImages.map((img, i) => (
-                      <img
-                        key={i}
-                        src={img}
-                        alt={`bg${i}`}
-                        onClick={() => {
-                          setBgImageFile(null);
-                          setSelectedDefaultBg(img);
-                        }}
-                        style={{
-                          width: 60,
-                          height: 40,
-                          objectFit: "cover",
-                          cursor: "pointer",
-                          border: selectedDefaultBg === img ? "2px solid blue" : "1px solid #ccc",
-                          borderRadius: 4,
-                        }}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-
             <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
               <select value={bgMode} onChange={(e) => setBgMode(e.target.value)}>
                 <option value="solid">Solid</option>

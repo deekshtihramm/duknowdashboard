@@ -57,7 +57,7 @@ root.render(
         <Route path='/newdashboard/total-u-questions' element={<Totaluquestions />} />
         <Route path='/newdataentry' element={<DataEntry2 />} />
         <Route path="*" element={<h1> 404 Page not found</h1>} />
-        <Route path='/image-generator' element={<TestingImage />} />
+        <Route path='/testing' element={<TestingImage />} />
         <Route path='/' element={<Login />}/>
         <Route path='/question/:id' element={<Postquestionsdetails/>}/>
       </Routes>

@@ -1145,6 +1145,9 @@ return (
               }
             }}
           />
+          <button className="btn" style={{marginBottom:"32px"}} onClick={() => { navigate("/testing"); }}>
+            Create Text Image
+          </button>
         </div>
 
      {/* <div style={{ margin: "10px 0" }}>
