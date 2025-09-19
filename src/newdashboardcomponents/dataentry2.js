@@ -80,7 +80,7 @@ const UserDetails = () => {
     
       const handleDelete = async (questionId) => {
         try {
-          const response = await fetch(`${BASE_URL}/api/randomquestions/delete/${questionId}`, {
+          const response = await fetch(`${BASE_URL}/api/random/delete/${category}/${questionId}`, {
             method: "DELETE",
           });
     

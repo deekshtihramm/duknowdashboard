@@ -2,7 +2,49 @@ import React, { useRef, useState, useEffect } from "react";
 import NewHeader from "./newHeader";
 import NewSidebar from "./newSidebar";
 import "./UserDetails.css";
-import image1 from '../images/image.png'
+import image1 from '../images/IMG-20250917-WA0026.jpg';
+import image2 from '../images/IMG-20250917-WA0027.jpg';
+import image3 from '../images/IMG-20250917-WA0028.jpg';
+import image4 from '../images/IMG-20250917-WA0029.jpg';
+import image5 from '../images/IMG-20250917-WA0030.jpg';
+import image6 from '../images/IMG-20250917-WA0027.jpg';
+import image7 from '../images/IMG-20250917-WA0031.jpg';
+import image8 from '../images/IMG-20250917-WA0032.jpg';
+import image10 from '../images/IMG-20250917-WA0034.jpg';
+import image11 from '../images/IMG-20250917-WA0035.jpg';
+import image12 from '../images/IMG-20250917-WA0036.jpg';
+import image13 from '../images/IMG-20250917-WA0037.jpg';
+import image14 from '../images/IMG-20250917-WA0038.jpg';
+import image15 from '../images/IMG-20250917-WA0039.jpg';
+import image16 from '../images/IMG-20250917-WA0040.jpg';
+import image18 from '../images/IMG-20250917-WA0042.jpg';
+import image20 from '../images/IMG-20250917-WA0044.jpg';
+import image21 from '../images/IMG-20250917-WA0045.jpg';
+import image22 from '../images/IMG-20250917-WA0046.jpg';
+import image23 from '../images/IMG-20250917-WA0047.jpg';
+import image24 from '../images/IMG-20250917-WA0048.jpg';
+import image25 from '../images/IMG-20250917-WA0049.jpg';
+import image26 from '../images/IMG-20250917-WA0050.jpg';
+import image27 from '../images/IMG-20250917-WA0051.jpg';
+import image28 from '../images/IMG-20250917-WA0052.jpg';
+import image33 from '../images/IMG-20250917-WA0057.jpg';
+import image34 from '../images/IMG-20250917-WA0058.jpg';
+import image38 from '../images/IMG-20250917-WA0062.jpg';
+import image39 from '../images/IMG-20250917-WA0063.jpg';
+import image41 from '../images/IMG-20250917-WA0065.jpg';
+import image46 from '../images/IMG-20250917-WA0070.jpg';
+import image47 from '../images/IMG-20250917-WA0071.jpg';
+import image48 from '../images/IMG-20250917-WA0072.jpg';
+import image49 from '../images/IMG-20250917-WA0073.jpg';
+import image50 from '../images/IMG-20250917-WA0074.jpg';
+import image51 from '../images/IMG-20250917-WA0075.jpg';
+import image52 from '../images/IMG-20250917-WA0076.jpg';
+import image53 from '../images/IMG-20250917-WA0077.jpg';
+import image54 from '../images/IMG-20250917-WA0078.jpg';
+
+
+
+
     
     const DEFAULT_CANVAS = { width: 1200, height: 630 }; // default poster size
     
@@ -31,7 +73,7 @@ const AdvancedTextToImage = () => {
       const [canvasSize, setCanvasSize] = useState(DEFAULT_CANVAS);
     
       // Text states
-      const [text, setText] = useState("Hi DuKnow Guys \nCreate awesome Image!");
+      const [text, setText] = useState("Hi DuKnow \nCreate awesome Image!");
       const [fontFamily, setFontFamily] = useState("Georgia");
       const [fontSize, setFontSize] = useState(64);
       const [fontColor, setFontColor] = useState("#111111");
@@ -81,11 +123,46 @@ const AdvancedTextToImage = () => {
       // Update objectURL when bgImageFile changes
      // --- Add this near top ---
 const defaultBgImages = [
-  image1,
-  "/images/bg2.jpg",
-  "/images/bg3.jpg",
-  "/images/bg4.jpg",
-]; // public folder lo petti path ichhi
+  `${image1}`,
+  `${image2}`,
+  `${image3}`,
+  `${image4}`,
+  `${image5}`,
+  `${image6}`,
+  `${image7}`,
+  `${image8}`,
+  `${image10}`,
+  `${image11}`,
+  `${image12}`,
+  `${image13}`,
+  `${image14}`,
+  `${image15}`,
+  `${image16}`,
+  `${image18}`,
+  `${image20}`,
+  `${image21}`,
+  `${image22}`,
+  `${image23}`,
+  `${image24}`,
+  `${image25}`,
+  `${image26}`,
+  `${image27}`,
+  `${image28}`,
+  `${image33}`,
+  `${image34}`,
+  `${image38}`,
+  `${image39}`,
+  `${image41}`,
+  `${image46}`,
+  `${image47}`,
+  `${image48}`,
+  `${image49}`,
+  `${image50}`,
+  `${image51}`,
+  `${image52}`,
+  `${image53}`,
+  `${image54}`,
+];
 
 // ---- Inside Component ----
 
@@ -424,7 +501,7 @@ useEffect(() => {
     
       // Quick reset
       const resetAll = () => {
-        setText("Hi Duknow guys \nCreate awesome images!");
+        setText("Hi Duknow \nCreate awesome images!");
         setFontFamily("Georgia");
         setFontSize(64);
         setFontColor("#111111");
@@ -596,9 +673,6 @@ useEffect(() => {
           <hr style={{ margin: "12px 0" }} />
 
           <div>
-            <label style={{ fontWeight: 600 }}>Background</label>
-            <hr style={{ margin: "12px 0" }} />
-
             <div>
               <label style={{ fontWeight: 600 }}>Background</label>
               <select
