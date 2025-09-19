@@ -78,9 +78,9 @@ const UserDetails = () => {
         }
       };
     
-      const handleDelete = async (questionId) => {
+      const handleDelete = async (questionId,categoryname) => {
         try {
-          const response = await fetch(`${BASE_URL}/api/random/delete/${category}/${questionId}`, {
+          const response = await fetch(`${BASE_URL}/api/random/delete/${categoryname}/${questionId}`, {
             method: "DELETE",
           });
     

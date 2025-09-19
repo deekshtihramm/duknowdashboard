@@ -118,7 +118,7 @@ const AllQuestionsTab = ({
                     </span>
 
                     <button
-                      onClick={() => handleDelete(q._id)}
+                      onClick={() => handleDelete(q._id,q.category)}
                       style={{
                         padding: "4px 10px",
                         backgroundColor: "#ff5555",
