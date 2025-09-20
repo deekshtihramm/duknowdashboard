@@ -626,7 +626,7 @@ const buildWikimediaApiUrl = (q) => {
     generator: "search",
     gsrsearch: `intitle:${q}`,
     gsrnamespace: "6",
-    gsrlimit: "10",
+    gsrlimit: "30",
     prop: "imageinfo",
     iiprop: "url",
     pithumbsize: "400",
@@ -793,6 +793,7 @@ useEffect(() => {
     "Why is this software used",
     "explain in simple words",
     "biography",
+    "success story",
     "history",
     "explain in points wise",
     "simple explanation with out caluclations",
@@ -1150,7 +1151,7 @@ return (
           </button>
         </div>
 
-     {/* <div style={{ margin: "10px 0" }}>
+{/* <div style={{ margin: "10px 0" }}>
   <button onClick={() => handleAIImage("text")} className="btn" style={{ marginRight: 8 }}>
     Text Image
   </button>

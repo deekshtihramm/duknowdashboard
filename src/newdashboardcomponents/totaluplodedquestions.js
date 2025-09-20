@@ -94,18 +94,18 @@ const TotalPostedQuestions = () => {
 }, [selectedCategory, fetchQuestions]);
 
 
-const handleDelete = async (category, id) => {
+const handleDelete = async (category, pageNumber) => {
   if (!window.confirm("Are you sure you want to delete this question?")) return;
 
   try {
-    const res = await fetch(`${BASE_URL}/api/realpages/${category}/${id}`, {
+    const res = await fetch(`${BASE_URL}/api/realpages/${category}/${pageNumber}`, {
       method: "DELETE",
     });
 
     if (res.ok) {
       setQuestionsByCategory((prev) => ({
         ...prev,
-        [category]: prev[category].filter((q) => q._id !== id),
+        [category]: prev[category].filter((q) => q.pageNumber !== pageNumber),
       }));
       alert("Question deleted successfully!");
     } else {
@@ -192,7 +192,7 @@ const handleDelete = async (category, id) => {
                         </td>
                           <td>
                             <button
-                              onClick={() => handleDelete(selectedCategory, q._id)}
+                              onClick={() => handleDelete(selectedCategory, q.pageNumber)}
                               style={{
                                 backgroundColor: "#ffffff05",
                                 color: "red",
