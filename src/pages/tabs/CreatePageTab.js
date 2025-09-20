@@ -341,8 +341,8 @@ const handleExplain = async (text, setter, language, type, fieldKey) => {
                 {
                   text:
                     type === "short"
-                      ? `Provide a concise but complete answer to the following question in 500–1000 characters:\n\n${text}\n\nin ${language}`
-                      : `Provide a detailed response to the following question using 4000–5000 characters (no extra empty lines):\n\n${text}\n\nin ${language}`
+                      ? `Provide a concise but complete answer to the following question in 1000–2000 characters:\n\n${text}\n\nin ${language}`
+                      : `Provide a detailed response to the following question using 3000–4000 characters (no extra empty lines):\n\n${text}\n\nin ${language}`
                 }
               ]
             }
@@ -626,7 +626,7 @@ const buildWikimediaApiUrl = (q) => {
     generator: "search",
     gsrsearch: `intitle:${q}`,
     gsrnamespace: "6",
-    gsrlimit: "30",
+    gsrlimit: "10",
     prop: "imageinfo",
     iiprop: "url",
     pithumbsize: "400",
@@ -785,19 +785,22 @@ useEffect(() => {
     }
   };
 
-  const prompts = [
-    "explain more",
-    "in programming",
-    "name, ceo, year, hq, industry, products, company estimated Net Worth and Company Purpose explain",
-    "explain this software",
-    "Why is this software used",
-    "explain in simple words",
-    "biography",
-    "success story",
-    "history",
-    "explain in points wise",
-    "simple explanation with out caluclations",
-  ];
+ const prompts = [
+  "Explain more",
+  "Explain in detail",
+  "Explain this concept in exactly 2000 characters",
+  "Give in 2000 characters",
+  "In programming",
+  "Name, CEO, year, HQ, industry, products, company estimated net worth and company purpose explain",
+  "Explain this software",
+  "Why is this software used",
+  "Explain in simple words",
+  "Biography",
+  "History",
+  "Explain in points wise",
+  "Simple explanation without calculations"
+];
+
  const onCropComplete = useCallback((_, croppedPixels) => {
     setCroppedAreaPixels(croppedPixels);
   }, []);
@@ -1151,7 +1154,7 @@ return (
           </button>
         </div>
 
-{/* <div style={{ margin: "10px 0" }}>
+     {/* <div style={{ margin: "10px 0" }}>
   <button onClick={() => handleAIImage("text")} className="btn" style={{ marginRight: 8 }}>
     Text Image
   </button>

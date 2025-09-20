@@ -96,6 +96,7 @@ const TotalPostedQuestions = () => {
 
 const handleDelete = async (category, pageNumber) => {
   if (!window.confirm("Are you sure you want to delete this question?")) return;
+  console.log("Deleting question in category:", category, "with pageNumber:", pageNumber);
 
   try {
     const res = await fetch(`${BASE_URL}/api/realpages/${category}/${pageNumber}`, {
