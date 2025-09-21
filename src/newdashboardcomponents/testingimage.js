@@ -20,7 +20,6 @@ const COLORS = [
   "#85929E", "#E59866", "#48C9B0", "#F5B041", "#CD6155"
 ];
 
-// 🔹 Pie chart label (%)
 const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
   const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
   const x = cx + radius * Math.cos(-midAngle * (Math.PI / 180));
@@ -46,7 +45,7 @@ const UsersCategoryAnalysis = () => {
         users.forEach(user => {
           if (Array.isArray(user.pageNames)) {
             user.pageNames.forEach(page => {
-              const category = page.split("-")[0]; 
+              const category = page.split("-")[0];
               if (allowedCategories.includes(category)) {
                 categoryCount[category] = (categoryCount[category] || 0) + 1;
               }
@@ -72,11 +71,11 @@ const UsersCategoryAnalysis = () => {
   }, []);
 
   return (
-    <div style={{ width: "100%", display: "flex", justifyContent: "space-between" }}>
-      {/* Pie Chart (Percentage) */}
-      <div style={{ width: "50%", height: 450 }}>
+    <div style={{ display: "flex", flexWrap: "wrap", gap: "20px", width: "100%" }}>
+      {/* Pie Chart */}
+      <div style={{ flex: "1 1 400px", minHeight: "400px" }}>
         <h3 style={{ textAlign: "center" }}>🥧 Category Usage (% Percentage)</h3>
-        <ResponsiveContainer>
+        <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
               data={chartData}
@@ -84,8 +83,8 @@ const UsersCategoryAnalysis = () => {
               nameKey="name"
               cx="50%"
               cy="50%"
-              outerRadius={150}
-              innerRadius={70}
+              outerRadius="80%"
+              innerRadius="40%"
               labelLine={false}
               label={renderCustomizedLabel}
             >
@@ -99,10 +98,10 @@ const UsersCategoryAnalysis = () => {
         </ResponsiveContainer>
       </div>
 
-      {/* Bar Chart (Counts) */}
-      <div style={{ width: "50%", height: 450 }}>
+      {/* Bar Chart */}
+      <div style={{ flex: "1 1 400px", minHeight: "400px" }}>
         <h3 style={{ textAlign: "center" }}>📊 Category Usage (Counts)</h3>
-        <ResponsiveContainer>
+        <ResponsiveContainer width="100%" height="100%">
           <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 80 }}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="name" angle={-45} textAnchor="end" interval={0} height={80} />
