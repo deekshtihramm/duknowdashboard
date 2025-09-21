@@ -169,20 +169,54 @@ const Postquestions = () => {
         </div>
       </div>
 
-      <div className={styles.controls}>
-        <select value={category} onChange={(e) => setCategory(e.target.value)} className={styles.select}>
-          {categories.map((cat) => (
-            <option key={cat.value} value={cat.value}>{cat.label}</option>
-          ))}
-        </select>
-        <input
-          type="text"
-          placeholder="Search by title, page number, or date"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className={styles.search}
-        />
-      </div>
+    <div className={styles.controls}>
+  <select
+    value={category}
+    onChange={(e) => setCategory(e.target.value)}
+    className={styles.select}
+  >
+    {categories.map((cat) => (
+      <option key={cat.value} value={cat.value}>
+        {cat.label}
+      </option>
+    ))}
+  </select>
+
+  <input
+    type="text"
+    placeholder="Search by title, page number, or date"
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+    className={styles.search}
+  />
+
+  {/* ✅ Copy All Questions Button */}
+  <button
+    className={styles.copyButton}
+    onClick={async () => {
+      try {
+        const res = await fetch(
+          `http://localhost:4000/api/realpages/questions/${category}/english-titles`
+        );
+        const data = await res.json();
+
+        if (data?.titles?.length) {
+          const textToCopy = data.titles.join("\n"); // line by line
+          await navigator.clipboard.writeText(textToCopy);
+          alert(`✅ ${data.titles.length} questions copied to clipboard!`);
+        } else {
+          alert("No questions found for this category.");
+        }
+      } catch (err) {
+        console.error(err);
+        alert("❌ Failed to copy questions.");
+      }
+    }}
+  >
+    Copy All Questions
+  </button>
+</div>
+
 
 
       {loading && questions.length === 0 ? (

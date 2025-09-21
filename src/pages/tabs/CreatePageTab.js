@@ -264,42 +264,44 @@ const handleTranslate = async (text, lang, setter,content) => {
 // };
 
 // Compress base64 image to target size/quality
-  const compressImage = (base64, maxSizeKB = 500) =>
-    new Promise((resolve) => {
-      const img = new Image();
-      img.src = base64;
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d");
+const compressImage = (base64, maxSizeKB = 600) =>
+  new Promise((resolve) => {
+    const img = new Image();
+    img.src = base64;
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
 
-        let width = img.width;
-        let height = img.height;
-        const maxDim = 1024;
-        if (width > maxDim || height > maxDim) {
-          if (width > height) {
-            height = (height * maxDim) / width;
-            width = maxDim;
-          } else {
-            width = (width * maxDim) / height;
-            height = maxDim;
-          }
+      let width = img.width;
+      let height = img.height;
+      const maxDim = 1024;
+      if (width > maxDim || height > maxDim) {
+        if (width > height) {
+          height = (height * maxDim) / width;
+          width = maxDim;
+        } else {
+          width = (width * maxDim) / height;
+          height = maxDim;
         }
+      }
 
-        canvas.width = width;
-        canvas.height = height;
-        ctx.drawImage(img, 0, 0, width, height);
+      canvas.width = width;
+      canvas.height = height;
+      ctx.drawImage(img, 0, 0, width, height);
 
-        let quality = 0.9;
-        let compressed = canvas.toDataURL("image/jpeg", quality);
+      let quality = 0.9; // start with high quality
+      let compressed = canvas.toDataURL("image/jpeg", quality);
 
-        while (compressed.length / 1024 > maxSizeKB && quality > 0.1) {
-          quality -= 0.05;
-          compressed = canvas.toDataURL("image/jpeg", quality);
-        }
+      // prevent over-compression (keep clarity)
+      while ((compressed.length * (3 / 4)) / 1024 > maxSizeKB && quality > 0.7) {
+        quality -= 0.05;
+        compressed = canvas.toDataURL("image/jpeg", quality);
+      }
 
-        resolve(compressed);
-      };
-    });
+      resolve(compressed);
+    };
+  });
+
 
   const dataURLtoFile = (dataurl, filename) => {
     const arr = dataurl.split(",");
@@ -527,7 +529,7 @@ const handleSubmit = async () => {
     if (uploadedImageUrl && uploadedImageUrl.startsWith("data:image")) {
       try {
         console.log("Compressing base64 image before upload...");
-        const compressedBase64 = await compressImage(uploadedImageUrl, 500);
+        const compressedBase64 = await compressImage(uploadedImageUrl, 600);
         const file = dataURLtoFile(compressedBase64, "generated.jpg");
 
         const formData = new FormData();
