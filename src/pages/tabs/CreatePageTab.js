@@ -894,7 +894,7 @@ const getCroppedImg = (imageSrc, pixelCrop) => {
     if (!selectedPageCategory || !question) return;
 
     const response = await axios.get(
-      `http://localhost:4000/api/realpages/question/check/${selectedPageCategory}?title=${encodeURIComponent(question)}`
+      `${BASE_URL}/api/realpages/question/check/${selectedPageCategory}?title=${encodeURIComponent(question)}`
     );
 
     setCheckResults((prev) => ({
