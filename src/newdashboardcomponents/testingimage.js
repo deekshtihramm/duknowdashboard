@@ -4,7 +4,7 @@ import {
   PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer,
   BarChart, Bar, XAxis, YAxis, CartesianGrid
 } from "recharts";
-import { BASE_URL } from "./config";
+import { BASE_URL } from "../config";
 
 const allowedCategories = [
   "general", "business", "food", "history", "movies", "mythology", "scientists",
