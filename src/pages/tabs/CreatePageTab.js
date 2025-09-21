@@ -1,4 +1,5 @@
 import React, { useState, useEffect,useCallback} from "react";
+import axios from "axios";
 import "./CreatePageTab.css";
 import { useNavigate } from "react-router-dom";
 import Cropper from 'react-easy-crop';
@@ -615,10 +616,7 @@ const [wikimediaResults, setWikimediaResults] = useState([]);
 const [includeCelebs, setIncludeCelebs] = useState(false);
 
 const celebrities = [
-  "Priyanka Chopra",
-  "Tom Cruise",
-  "Shah Rukh Khan",
-  "Angelina Jolie",
+" "
 ];
 
 const buildWikimediaApiUrl = (q) => {
@@ -670,17 +668,48 @@ useEffect(() => {
     if (includeCelebs) queries = [...queries, ...celebrities];
 
     const allResults = [];
+
     for (const q of queries) {
-      const items = await fetchWikimediaImages(q);
+      // Use keypoint-based fetch for large queries
+      const items = q.split(" ").length > 3 
+        ? await fetchImagesForLargeQuery(q) 
+        : await fetchWikimediaImages(q);
       allResults.push(...items);
     }
-    setWikimediaResults(allResults);
+
+    // Remove duplicates overall
+    const uniqueResults = Array.from(new Map(allResults.map(i => [i.id, i])).values());
+    setWikimediaResults(uniqueResults);
   };
 
   fetchImages();
 }, [title, includeCelebs]);
 
-// Unsplash API
+
+const extractKeywords = (query) => {
+  // Simple split by spaces & remove short words (<3 letters)
+  return query
+    .split(/\s+/)
+    .filter(word => word.length > 2)
+    .slice(0, 5); // take top 5 words for API query
+};
+
+const fetchImagesForLargeQuery = async (query) => {
+  const keywords = extractKeywords(query); // ["key", "points", "from", "query"]
+  const allResults = [];
+
+  for (const k of keywords) {
+    const items = await fetchWikimediaImages(k);
+    allResults.push(...items);
+  }
+
+  // Remove duplicates by pageid
+  const uniqueResults = Array.from(new Map(allResults.map(i => [i.id, i])).values());
+  return uniqueResults;
+};
+
+
+
 const UNSPLASH_ACCESS_KEY = "y94_AOhsoxMo6A8JIq6hGPgGhxHR-nEuVHT9FBWVa2E";
 
 const fetchUnsplashImages = async (query) => {
@@ -857,6 +886,31 @@ const getCroppedImg = (imageSrc, pixelCrop) => {
   });
 };
 
+
+ const [checkResults, setCheckResults] = useState({}); // store results for each question
+
+ const handleCheckQuestion = async (question) => {
+  try {
+    if (!selectedPageCategory || !question) return;
+
+    const response = await axios.get(
+      `http://localhost:4000/api/realpages/question/check/${selectedPageCategory}?title=${encodeURIComponent(question)}`
+    );
+
+    setCheckResults((prev) => ({
+      ...prev,
+      [question]: response.data.exists ? response.data.data : null  // store full document or null
+    }));
+  } catch (error) {
+    console.error("Error checking question:", error);
+    setCheckResults((prev) => ({
+      ...prev,
+      [question]: null
+    }));
+  }
+};
+
+
 return (
   <div className="tab-content">
     {/* Category Selector */}
@@ -893,20 +947,65 @@ return (
         <option value="aitools">AItools</option>
       </select>
     </div>
-    {/* Retrieved Questions */}
-    {Array.isArray(categoryQuestions) && categoryQuestions.length > 0 && (
-      <div style={{ border: "1px solid #ccc", padding: "5px", borderRadius: "5px" }}>
-        <h4>Retrieved Question ({selectedPageCategory})</h4>
-        <ul>
-          {categoryQuestions.map((q, index) => (
-            <li key={q._id || index} style={{ marginBottom: "6px" }}>
-              {q.question || "No question text available"}
-            </li>
-          ))}
-        </ul>
-      </div>
-    )}
 
+    {/* Retrieved Questions */}
+{Array.isArray(categoryQuestions) && categoryQuestions.length > 0 && (
+        <div style={{ border: "1px solid #ccc", padding: "0px 10px", borderRadius: "5px" }}>
+          <h4>Retrieved Questions ({selectedPageCategory})</h4>
+          <ul style={{ listStyle: "none", padding: 0 }}>
+            {categoryQuestions.map((q, index) => (
+              <li
+                key={q._id || index}
+                style={{
+                  marginBottom: "0px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  padding: "6px 10px",
+                  border: "1px solid #eee",
+                  borderRadius: "4px",
+                  background: "#f9f9f9"
+                }}
+              >
+                <span style={{ flex: 1 }}>{q.question || "No question text available"}</span>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <button
+                    onClick={() => handleCheckQuestion(q.question)}
+                    style={{
+                      minWidth: "80px",
+                      height: "28px",
+                      padding: "2px 8px",
+                      borderRadius: "4px",
+                      background: "#007bff",
+                      color: "#fff",
+                      border: "none",
+                      cursor: "pointer",
+                      fontSize: "12px",
+                      marginTop: "0px",
+                    }}
+                  >
+                    Find
+                  </button>
+                  {checkResults[q.question] !== undefined && (
+                  <span
+                    style={{
+                      fontSize: "12px",
+                      color: checkResults[q.question] ? "green" : "red",
+                      marginLeft: "5px",
+                    }}
+                  >
+                    {checkResults[q.question]
+                      ? `Exists (Page: ${checkResults[q.question].pageNumber || "N/A"})`
+                      : "Not Found"}
+                  </span>
+                )}
+
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     {/* Title, Category Reload, Delete, Level */}
     <div className="input-row"><br />
       <label className="input-label">Title:</label><br /><br />
