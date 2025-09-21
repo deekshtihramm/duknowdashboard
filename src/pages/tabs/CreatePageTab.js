@@ -990,7 +990,7 @@ return (
                   <span
                     style={{
                       fontSize: "12px",
-                      color: checkResults[q.question] ? "green" : "red",
+                      color: checkResults[q.question] ? "red" : "green",
                       marginLeft: "5px",
                     }}
                   >
