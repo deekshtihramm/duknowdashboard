@@ -181,19 +181,34 @@ const NewDashboard = ({ children }) => {
                     <section className="dashboard-user-stat" style={{marginTop: "20px" ,paddingBottom: "50px"}}>
                       <UsersCategoryAnalysis />
                     </section>
-                    <section className="dashboard-user-stat">
-                      <div style={{marginLeft: "20px", height: "45%", width: "50%", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center"}}>
+                    <section style={{ display: "flex", flexWrap: "wrap", gap: "20px", width: "100%" }}>
+                      {/* Chart Container */}
+                      <div
+                        style={{
+                          flex: "1 1 0", // allow it to shrink freely
+                          maxWidth: "100%", // prevent horizontal overflow
+                          minHeight: "300px",
+                          borderRadius: "8px",
+                          display: "grid",
+                          placeItems: "center", // shorthand for align + justify
+                          backgroundColor: "#fff",
+                          boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+                          padding: "15px",
+                        }}
+                      >
                         <UserSignupChart />
                       </div>
-                       <div
+
+
+                      {/* Table Container */}
+                      <div
                         style={{
-                          marginLeft: "20px",
-                          height: "45%",
-                          width: "50%",
+                          flex: "1 1 300px",
+                          minHeight: "300px",
                           borderRadius: "8px",
                           display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
+                          flexDirection: "column",
+                          justifyContent: "flex-start",
                           backgroundColor: "#fff",
                           boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
                           padding: "15px",
@@ -224,7 +239,6 @@ const NewDashboard = ({ children }) => {
                         </table>
                       </div>
                     </section>
-                    
                     {children}
                 </main>
             </div>

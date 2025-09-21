@@ -92,7 +92,7 @@ const UserSignupChart = () => {
     color: "#0099ff",
   }
   return (
-    <div style={{ width: "100%", maxWidth: "1000%", margin: "0 auto" }}>
+    <div style={{ width: "80vw", margin: "0 auto" }}>
       <h3>User Signups</h3>
 
       {/* Timeframe Selector */}
