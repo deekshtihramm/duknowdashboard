@@ -196,7 +196,7 @@ const Postquestions = () => {
     onClick={async () => {
       try {
         const res = await fetch(
-          `http://localhost:4000/api/realpages/questions/${category}/english-titles`
+          `${BASE_URL}/api/realpages/questions/${category}/english-titles`
         );
         const data = await res.json();
 
