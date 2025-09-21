@@ -4,6 +4,7 @@ import {
   PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer,
   BarChart, Bar, XAxis, YAxis, CartesianGrid
 } from "recharts";
+import { BASE_URL } from "./config";
 
 const allowedCategories = [
   "general", "business", "food", "history", "movies", "mythology", "scientists",
@@ -38,7 +39,7 @@ const UsersCategoryAnalysis = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await axios.get("http://localhost:4000/api/normaluser/all");
+        const res = await axios.get(`${BASE_URL}/api/normaluser/all`);
         const users = res.data;
 
         const categoryCount = {};
