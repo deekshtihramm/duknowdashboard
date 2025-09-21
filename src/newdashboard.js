@@ -5,6 +5,7 @@ import "./newdashboard.css";
 import UserSignupChart from "./UserSignupChart.js";
 import { BASE_URL } from "./config";
 import { useNavigate } from "react-router-dom";
+import UsersCategoryAnalysis from "./newdashboardcomponents/testingimage.js";
 
 
 
@@ -177,6 +178,9 @@ const NewDashboard = ({ children }) => {
                               </div>  
                             </div>
                     </section>
+                    <section className="dashboard-user-stat" style={{marginTop: "20px" ,paddingBottom: "50px"}}>
+                      <UsersCategoryAnalysis />
+                    </section>
                     <section className="dashboard-user-stat">
                       <div style={{marginLeft: "20px", height: "45%", width: "50%", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center"}}>
                         <UserSignupChart />
@@ -220,6 +224,7 @@ const NewDashboard = ({ children }) => {
                         </table>
                       </div>
                     </section>
+                    
                     {children}
                 </main>
             </div>

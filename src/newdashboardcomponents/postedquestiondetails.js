@@ -1,7 +1,7 @@
-import { useLocation } from "react-router-dom";
 import React, { useState } from "react";
 import NewHeader from "./newHeader";
 import NewSidebar from "./newSidebar";
+import { useLocation, useNavigate } from "react-router-dom";
 import "./UserDetails.css";
 
 const QuestionDetail = () => {
@@ -9,6 +9,8 @@ const QuestionDetail = () => {
   const mongoData = location.state?.mongoData;
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
+  const navigate = useNavigate();
+
 
   if (!mongoData)
     return (
@@ -58,10 +60,10 @@ const QuestionDetail = () => {
       ),
     ],
   ];
-
-  const handleEdit = () => {
-    setIsEditing(true);
-  };
+const handleEdit = () => {
+  // Redirect to /edit-question with the full mongoData
+  navigate("/edit-question", { state: { mongoData } });
+};
 
   const handleCancel = () => {
     setIsEditing(false);

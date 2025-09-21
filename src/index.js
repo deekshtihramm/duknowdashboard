@@ -28,6 +28,8 @@ import DataEntry2 from './newdashboardcomponents/dataentry2.js';
 import TestingImage from './newdashboardcomponents/testingimage.js';
 import Login from './newdashboardcomponents/login.js';
 import Postquestionsdetails from './newdashboardcomponents/postedquestiondetails.js';
+import EditQuestionPage from "./newdashboardcomponents/EditQuestionPage";
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -60,6 +62,7 @@ root.render(
         <Route path='/testing' element={<TestingImage />} />
         <Route path='/' element={<Login />}/>
         <Route path='/question/:id' element={<Postquestionsdetails/>}/>
+        <Route path='/edit-question' element={<EditQuestionPage/>}/>
       </Routes>
        <ToastContainer
         position="top-right"
