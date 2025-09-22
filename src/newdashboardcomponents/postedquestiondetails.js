@@ -65,14 +65,6 @@ const handleEdit = () => {
   navigate("/edit-question", { state: { mongoData } });
 };
 
-  const handleCancel = () => {
-    setIsEditing(false);
-  };
-
-  const handleAIChange = (fieldName, value) => {
-    alert(`AI Change clicked for ${fieldName}: ${value}`);
-    // 🚀 Here you can integrate your AI API call (Gemini/OpenAI) and update state accordingly
-  };
 
   return (
     <div className="user-details">
@@ -138,7 +130,6 @@ const handleEdit = () => {
               </button>
             ) : (
               <button
-                onClick={handleCancel}
                 style={{
                   display: "block",
                   margin: "0 auto 20px",
@@ -172,46 +163,10 @@ const handleEdit = () => {
                         <td style={labelStyle}>{pair[0]}</td>
                         <td style={fieldStyle}>
                           {pair[1]}
-                          {isEditing && pair[0] && (
-                            <button
-                              style={{
-                                marginLeft: "10px",
-                                padding: "4px 8px",
-                                background: "#007bff",
-                                color: "#fff",
-                                border: "none",
-                                borderRadius: "4px",
-                                cursor: "pointer",
-                                fontSize: "12px",
-                              }}
-                              onClick={() => handleAIChange(pair[0], pair[1])}
-                            >
-                              AI Change
-                            </button>
-                          )}
                         </td>
                         <td style={labelStyle}>{nextPair[0]}</td>
                         <td style={fieldStyle}>
                           {nextPair[1]}
-                          {isEditing && nextPair[0] && (
-                            <button
-                              style={{
-                                marginLeft: "10px",
-                                padding: "4px 8px",
-                                background: "#007bff",
-                                color: "#fff",
-                                border: "none",
-                                borderRadius: "4px",
-                                cursor: "pointer",
-                                fontSize: "12px",
-                              }}
-                              onClick={() =>
-                                handleAIChange(nextPair[0], nextPair[1])
-                              }
-                            >
-                              AI Change
-                            </button>
-                          )}
                         </td>
                       </tr>
                     );
@@ -232,24 +187,6 @@ const handleEdit = () => {
                     <td style={{ ...labelStyle, width: "200px" }}>{pair[0]}</td>
                     <td style={fieldStyle}>
                       {pair[1]}
-                      {isEditing && (
-                        <button
-                          style={{
-                            left: "10px",
-                            marginLeft: "10px",
-                            padding: "4px 8px",
-                            background: "#28a745",
-                            color: "#fff",
-                            border: "none",
-                            borderRadius: "4px",
-                            cursor: "pointer",
-                            fontSize: "12px",
-                          }}
-                          onClick={() => handleAIChange(pair[0], pair[1])}
-                        >
-                          AI Change
-                        </button>
-                      )}
                     </td>
                   </tr>
                 ))}

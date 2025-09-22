@@ -303,7 +303,6 @@ const compressImage = (base64, maxSizeKB = 600) =>
     };
   });
 
-
   const dataURLtoFile = (dataurl, filename) => {
     const arr = dataurl.split(",");
     const mime = arr[0].match(/:(.*?);/)[1];
