@@ -37,6 +37,7 @@ const EditQuestionPage = () => {
   const [level, setLevel] = useState(mongoData.level || "");
   const [update, setUpdate] = useState(mongoData.update || "");
   const [imageUrl, setImageUrl] = useState(mongoData.imageUrl || "");
+  const [saving, setsaving] = useState(false);
 
 const [loading, setLoading] = useState({
   titleHindi: false,
@@ -220,6 +221,8 @@ const [loading, setLoading] = useState({
 
   // ---------------- SAVE -------------------
 const handleSave = async () => {
+
+  setsaving(true);
   if (!title || !matter || !longMatter) {
     alert("Please fill in all required fields");
     return;
@@ -290,6 +293,8 @@ const handleSave = async () => {
     toast.success("Question updated successfully!");
 
     navigate("/newdataentry", { state: { mongoData: response.data } });
+
+    setsaving(false);
 
   } catch (error) {
     console.error("Error updating question:", error);
@@ -876,7 +881,7 @@ const handleSave = async () => {
 
             <div style={{ textAlign: "center", marginTop: "20px" }}>
               <button onClick={handleSave} style={{ padding: "10px 30px", fontSize: "16px", cursor: "pointer", borderRadius: "5px", background: "#28a745", color: "#fff" }}>
-                Save Changes
+                {saving ? "Saving..." : "Save Changes"}
               </button>
             </div>
 
