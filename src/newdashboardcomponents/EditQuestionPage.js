@@ -6,6 +6,8 @@ import axios from "axios";
 import "./UserDetails.css";
 import Cropper from "react-easy-crop";
 import getCroppedImg from "./cropImage";
+import { toast } from "react-toastify";
+import { BASE_URL } from "../config";
 
 const GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/";
 const API_KEY = process.env.REACT_APP_GEMINI_API_KEY;
@@ -254,7 +256,7 @@ const handleSave = async () => {
       const formData = new FormData();
       formData.append("image", file);
 
-      const res = await fetch(`${backend_URL2}/upload-image`, {
+      const res = await fetch(`${BASE_URL}/upload-image`, {
         method: "POST",
         body: formData,
       });
@@ -283,10 +285,11 @@ const handleSave = async () => {
     };
 
     // 🔑 4. PUT request to update question
-    const response = await axios.put(`http://localhost:4000/api/realpages/update/${category}/${mongoData._id}`, updatedData);
+    const response = await axios.put(`${BASE_URL}/api/realpages/update/${category}/${mongoData._id}`, updatedData);
 
-    alert("Question updated successfully!");
-    navigate("/question-detail", { state: { mongoData: response.data } });
+    toast.success("Question updated successfully!");
+
+    navigate("/newdataentry", { state: { mongoData: response.data } });
 
   } catch (error) {
     console.error("Error updating question:", error);
