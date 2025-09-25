@@ -246,14 +246,28 @@ return (
           </div>
 
           {/* Performance Summary */}
-          <div style={{ marginTop: "8px", fontSize: "13px", color: "#374151" }}>
-            {emp.performance?.map((p, idx) => (
-              <div key={idx} style={{ marginBottom: "4px" }}>
-                <div>Date: {new Date(p.date).toLocaleDateString()}</div>
-                <div>Pages: {p.pagesEntered}</div>
-              </div>
-            ))}
-          </div>
+<div style={{ marginTop: "8px", fontSize: "13px", color: "#374151" }}>
+  {(() => {
+    // Group by date
+    const pagesByDate = {};
+    emp.performance?.forEach(p => {
+      const dateKey = new Date(p.date).toLocaleDateString();
+      if (!pagesByDate[dateKey]) {
+        pagesByDate[dateKey] = 0;
+      }
+      pagesByDate[dateKey] += p.pagesEntered;
+    });
+
+    // Convert to array to render
+    return Object.entries(pagesByDate).map(([date, totalPages], idx) => (
+      <div key={idx} style={{ marginBottom: "4px" }}>
+        <div>Date: {date}</div>
+        <div>Pages: {totalPages}</div>
+      </div>
+    ));
+  })()}
+</div>
+
         </div>
       ))
     }
