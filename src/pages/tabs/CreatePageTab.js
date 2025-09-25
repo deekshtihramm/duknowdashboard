@@ -724,8 +724,6 @@ const fetchImagesForLargeQuery = async (query) => {
   return uniqueResults;
 };
 
-
-
 const UNSPLASH_ACCESS_KEY = "y94_AOhsoxMo6A8JIq6hGPgGhxHR-nEuVHT9FBWVa2E";
 
 const fetchUnsplashImages = async (query) => {
@@ -845,7 +843,8 @@ useEffect(() => {
   "Biography",
   "History",
   "Explain in points wise",
-  "Simple explanation without calculations"
+  "Simple explanation without calculations",
+  "Step by step explanation"
 ];
 
  const onCropComplete = useCallback((_, croppedPixels) => {
