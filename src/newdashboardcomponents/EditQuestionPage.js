@@ -7,7 +7,9 @@ import "./UserDetails.css";
 import Cropper from "react-easy-crop";
 import getCroppedImg from "./cropImage";
 import { toast } from "react-toastify";
+
 import { BASE_URL } from "../config";
+
 
 const GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/";
 const API_KEY = process.env.REACT_APP_GEMINI_API_KEY;

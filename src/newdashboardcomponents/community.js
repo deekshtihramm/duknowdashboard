@@ -4,7 +4,9 @@ import NewHeader from "./newHeader";
 import NewSidebar from "./newSidebar";
 import "./UserDetails.css";
 import { useNavigate } from "react-router-dom";
-import { BASE_URL } from "../config";
+// import { BASE_URL } from "../config";
+
+const BASE_URL = "http://localhost:4000"; // Change to your backend URL
 
 const API = `${BASE_URL}/api/dashboard`;
 
