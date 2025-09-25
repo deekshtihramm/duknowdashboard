@@ -63,7 +63,7 @@ const Empauthui = () => {
       } else {
         console.warn('Tokens missing in response');
       }
-
+      sessionStorage.setItem('username', data.user.name);
       navigate('/dashboard'); // Redirect to dashboard after login
     } else {
       // Switch to login view after successful registration

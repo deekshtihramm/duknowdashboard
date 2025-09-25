@@ -7,7 +7,6 @@ import reportWebVitals from './reportWebVitals';
 import Empauthui from './empauthiu';
 import Dashboard from './dashboard';
 import Dataentry from "./pages/dataentry.js";
-import Community from "./pages/community.js";
 import Reports from "./pages/Reports.js";
 import Settings from "./pages/Settings.js";
 import Analytics from "./pages/analytics.js";
@@ -29,6 +28,9 @@ import TestingImage from './newdashboardcomponents/testingimage.js';
 import Login from './newdashboardcomponents/login.js';
 import Postquestionsdetails from './newdashboardcomponents/postedquestiondetails.js';
 import EditQuestionPage from "./newdashboardcomponents/EditQuestionPage";
+import Community from './newdashboardcomponents/community.js';
+import EmployeeManagement from "./newdashboardcomponents/employeeManagement.js";
+
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -41,7 +43,6 @@ root.render(
         <Route path="/login2" element={<Empauthui />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/dataentry" element={<Dataentry />} />
-        <Route path="/community" element={<Community />} />
         <Route path="/analytics" element={<Analytics />} />
         <Route path="/reports" element={<Reports />} />
         <Route path="/settings" element={<Settings />} />
@@ -63,6 +64,10 @@ root.render(
         <Route path='/' element={<Login />}/>
         <Route path='/question/:id' element={<Postquestionsdetails/>}/>
         <Route path='/edit-question' element={<EditQuestionPage/>}/>
+        <Route path='/newcommunity' element={<Community />} />
+        <Route path="/employee-management" element={<EmployeeManagement />} />
+
+
       </Routes>
        <ToastContainer
         position="top-right"

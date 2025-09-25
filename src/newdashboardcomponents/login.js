@@ -37,8 +37,10 @@ async function submit(e) {
     if (data.token) localStorage.setItem('duknowToken', data.token);
     if (remember) {
       localStorage.setItem('duknowEmail', email.trim());
+      sessionStorage.setItem('duknowEmail', email.trim());
     } else {
       localStorage.removeItem('duknowEmail');
+      sessionStorage.setItem('duknowEmail', email.trim());
     }
 
     if (onLogin) onLogin(data);

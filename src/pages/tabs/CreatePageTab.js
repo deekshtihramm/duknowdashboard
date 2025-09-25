@@ -84,7 +84,7 @@ useEffect(() => {
   const [selectedImage, setSelectedImage] = useState(null); // User select chesina image store cheyadaniki
   const [selectedPrompt, setSelectedPrompt] = useState(""); // Short
   const [selectedLongPrompt, setSelectedLongPrompt] = useState(""); // Long
-
+  const [currentEmployeeId, setCurrentEmployeeId] = useState(null);
 const [crop, setCrop] = useState({ x: 0, y: 0 });
 const [zoom, setZoom] = useState(1);
 const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
@@ -597,6 +597,23 @@ const handleSubmit = async () => {
     
     setSuccessMessage("Page data submitted successfully!");
     toast.success("Saved successfully!");
+    // 🔑 7. Update employee performance after page submit
+const currentEmployeeId = sessionStorage.getItem("duknowEmail");
+console.log("Current Employee ID:", currentEmployeeId);
+console.log("Selected Category:", selectedPageCategory);
+
+if (currentEmployeeId && selectedPageCategory) {
+  try {
+    await fetch(`http://localhost:4000/api/dashboard/performance/update/${currentEmployeeId}/${selectedPageCategory}`, {
+      method: "POST",
+    });
+    console.log("Employee performance updated!");
+  } catch (perfErr) {
+    console.error("Failed to update employee performance:", perfErr);
+  }
+}
+
+
     window.scrollTo({ top: 0, behavior: "smooth" });
     setTimeout(() => setSuccessMessage(""), 3000);
     // 🔑 6. Refresh category questions

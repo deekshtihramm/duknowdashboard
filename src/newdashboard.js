@@ -5,7 +5,7 @@ import "./newdashboard.css";
 import UserSignupChart from "./UserSignupChart.js";
 import { BASE_URL } from "./config";
 import { useNavigate } from "react-router-dom";
-import UsersCategoryAnalysis from "./newdashboardcomponents/testingimage.js";
+import UsersCategoryAnalysis from "./newdashboardcomponents/userscategoryanalysis.js";
 
 
 

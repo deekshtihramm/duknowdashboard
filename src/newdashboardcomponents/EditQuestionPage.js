@@ -291,7 +291,7 @@ const handleSave = async () => {
     const response = await axios.put(`${BASE_URL}/api/realpages/update/${category}/${mongoData._id}`, updatedData);
 
     toast.success("Question updated successfully!");
-
+    window.scrollTo(0, 0);
     navigate("/newdataentry", { state: { mongoData: response.data } });
 
     setsaving(false);
@@ -878,7 +878,7 @@ const handleSave = async () => {
               <label style={labelStyle}>Comments</label>
               <textarea value={comments} onChange={e => setComments(e.target.value)} rows={4} style={{ ...inputStyle, width: "100%" }} />
             </div>
-            
+
 
             <div style={{ textAlign: "center", marginTop: "20px" }}>
               <button onClick={handleSave} style={{ padding: "10px 30px", fontSize: "16px", cursor: "pointer", borderRadius: "5px", background: "#28a745", color: "#fff" }}>
