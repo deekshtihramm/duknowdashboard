@@ -18,7 +18,7 @@ const EditQuestionPage = () => {
   const navigate = useNavigate();
   const mongoData = location.state?.mongoData || {};
 
-  const backend_URL2 = "http://localhost:4000"; // or your actual backend
+  const backend_URL2 = "https://web.backend.duknow.in"; // or your actual backend
 
 
   const [title, setTitle] = useState(mongoData.title || "");
