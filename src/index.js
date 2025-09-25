@@ -30,6 +30,7 @@ import Postquestionsdetails from './newdashboardcomponents/postedquestiondetails
 import EditQuestionPage from "./newdashboardcomponents/EditQuestionPage";
 import Community from './newdashboardcomponents/community.js';
 import EmployeeManagement from "./newdashboardcomponents/employeeManagement.js";
+import Signupmember from './newdashboardcomponents/Signupmember.js';
 
 
 
@@ -66,6 +67,8 @@ root.render(
         <Route path='/edit-question' element={<EditQuestionPage/>}/>
         <Route path='/newcommunity' element={<Community />} />
         <Route path="/employee-management" element={<EmployeeManagement />} />
+        <Route path="/signup" element={<Signupmember />} />
+        
 
 
       </Routes>

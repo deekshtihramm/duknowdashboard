@@ -6,12 +6,12 @@ import UserSignupChart from "./UserSignupChart.js";
 import { BASE_URL } from "./config";
 import { useNavigate } from "react-router-dom";
 import UsersCategoryAnalysis from "./newdashboardcomponents/userscategoryanalysis.js";
+import FullColorGaugeCard from "./newdashboardcomponents/progress tobs/activeusers.js";
 
 
 
 const NewDashboard = ({ children }) => {
     const [isCollapsed, setIsCollapsed] = useState(true);
-
     const [totalUsers, setTotalUsers] = useState(0);
     const [loading, setLoading] = useState(true);
     const [recentQuestions, setRecentQuestions] = useState([]);
@@ -97,16 +97,17 @@ const NewDashboard = ({ children }) => {
     fetchPostedQuestionsCount();
   }, []);
   const cardStyle = {
-    width: "200px",
-    padding: "10px",
-    margin: "10px",
-    borderRadius: "12px",
-    border: "1px solid #e0e0e0",
-    background: "#ffffff",
-    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
-    textAlign: "center",
-    fontFamily: "'Segoe UI', Roboto, sans-serif",
-    cursor: "pointer",
+    width: "260px",
+        height: "100px",
+        background: "#fff",
+        borderRadius: "12px",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: "16px 20px",
+        cursor: "pointer"
+
   };
 
   const titleStyle = {
@@ -150,14 +151,10 @@ const NewDashboard = ({ children }) => {
                                 <div style={numberStyle}>
                                   {loading ? "..." : totalUsers}
                                 </div>
-                              </div>
+                           </div>
 
-                          <div style={cardStyle} onClick={() => window.location.href = '/newdashboard/active-users'}>
-                                <div style={titleStyle}>Active Users</div>
-                                <div style={numberStyle}>
-                                  {totalUsers !== null ? "-" : "Loading..."}
-                                </div>
-                              </div>                 
+                              <FullColorGaugeCard />
+
                           <div style={cardStyle} onClick={() => window.location.href = '/newdashboard/total-questions'}>
                                 <div style={titleStyle}>Total posted Questions</div>
                                 <div style={numberStyle}>

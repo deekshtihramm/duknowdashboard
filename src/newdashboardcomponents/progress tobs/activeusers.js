@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
+import { BASE_URL } from "../../config";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -10,7 +11,7 @@ export default function FullColorGaugeCard({ maxUsers = 100 }) {
   const chartRef = useRef(null);
 
   useEffect(() => {
-    fetch("http://localhost:4000/api/dashboard/active-users-today")
+    fetch(`${BASE_URL}/api/dashboard/active-users-today`)
       .then((res) => res.json())
       .then((data) => setValue(data.activeUsersToday));
   }, []);
@@ -35,13 +36,17 @@ export default function FullColorGaugeCard({ maxUsers = 100 }) {
 
   // Gradient fill
   const chart = chartRef.current;
-  let gradient = "#4e73df";
+  let gradient = "#11ff00ff";
   if (chart) {
-    const ctx = chart.ctx;
-    gradient = ctx.createLinearGradient(0, 0, 0, 150);
-    gradient.addColorStop(0, "#6a9efc");
-    gradient.addColorStop(1, "#4e73df");
-  }
+  const ctx = chart.ctx;
+  let gradient = ctx.createLinearGradient(0, 0, 0, 150);
+  gradient.addColorStop(0, "#44ff00ff");
+  gradient.addColorStop(1, "#0400ffff");
+  
+  // Use this gradient in dataset background
+  chart.data.datasets[0].backgroundColor = gradient;
+}
+
 
   const data = {
     datasets: [
@@ -68,7 +73,7 @@ export default function FullColorGaugeCard({ maxUsers = 100 }) {
   return (
     <div
       style={{
-        width: "320px",
+        width: "260px",
         height: "100px",
         background: "#fff",
         borderRadius: "12px",
@@ -83,18 +88,19 @@ export default function FullColorGaugeCard({ maxUsers = 100 }) {
       <div style={{ display: "flex", flexDirection: "column" }}>
         <span
           style={{
-            fontSize: "12px",
-            color: "#888",
+            fontSize: "17px",
             fontWeight: "500",
-            marginBottom: "6px",
+            color: "#555",
+            marginBottom: "8px",
+            letterSpacing: "0.5px",
           }}
         >
-          ACTIVE USERS TODAY
+          Active Users Today
         </span>
-        <span style={{ fontSize: "22px", fontWeight: "700", color: "#333" }}>
+        {/* <span style={{ fontSize: "22px", fontWeight: "700", color: "#333" }}>
           <span style={{ color: "green", marginRight: "6px" }}>↑</span>
           234%
-        </span>
+        </span> */}
       </div>
 
       {/* RIGHT SIDE CIRCLE */}
