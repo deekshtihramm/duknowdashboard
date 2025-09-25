@@ -72,8 +72,6 @@ const fetchEmployees = async () => {
   }
 };
 
-  if (!employee) return <p>Loading...</p>;
-
 return (
   <div className="user-details" style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
     <NewHeader />
