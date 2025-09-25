@@ -4,7 +4,7 @@ import NewHeader from "./newHeader";
 import NewSidebar from "./newSidebar";
 import "./EmployeeManagement.css";
 
-const API = "http://localhost:4000/api/dashboard";
+const API = "https://web.backend.duknow.in/api/dashboard";
 
 const EmployeeManagement = () => {
   const [employees, setEmployees] = useState([]);
