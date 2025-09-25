@@ -604,7 +604,7 @@ console.log("Selected Category:", selectedPageCategory);
 
 if (currentEmployeeId && selectedPageCategory) {
   try {
-    await fetch(`http://localhost:4000/api/dashboard/performance/update/${currentEmployeeId}/${selectedPageCategory}`, {
+    await fetch(`https://web.backend.duknow.in/api/dashboard/performance/update/${currentEmployeeId}/${selectedPageCategory}`, {
       method: "POST",
     });
     console.log("Employee performance updated!");
