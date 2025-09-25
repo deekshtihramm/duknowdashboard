@@ -4,8 +4,9 @@ import NewHeader from "./newHeader";
 import NewSidebar from "./newSidebar";
 import "./UserDetails.css";
 import { useNavigate } from "react-router-dom";
+import { BASE_URL } from "../config";
 
-const API = "http://localhost:4000/api/dashboard";
+const API = `${BASE_URL}/api/dashboard`;
 
 const UserDetails = () => {
   const [isCollapsed, setIsCollapsed] = useState(true);
@@ -26,7 +27,7 @@ const [employee, setEmployee] = useState(null);
 
   const fetchEmployee = async (email) => {
     try {
-      const res = await axios.get(`http://localhost:4000/api/dashboard/employee/${email}`);
+      const res = await axios.get(`${BASE_URL}/api/dashboard/employee/${email}`);
       setEmployee(res.data.employee);
       console.log("Employee Details:", res.data.employee);
       setUserRole(res.data.employee.role); // Set user role from fetched data
