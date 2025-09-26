@@ -161,31 +161,76 @@ return (
 
       {/* Performance */}
       <h3 style={{ marginTop: "16px", marginBottom: "12px", color: "#111827" }}>Performance:</h3>
-      {employee.performance && employee.performance.length > 0 ? (
-        employee.performance.map((p, idx) => (
-          <div key={idx} style={{
-            marginBottom: "12px",
-            padding: "12px",
-            background: "#e0f2fe",
-            borderRadius: "12px",
-            width: "100%",
-            textAlign: "left",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-          }}>
-            <p style={{ margin: "2px 0", fontWeight: 600 }}>Date: {new Date(p.date).toLocaleDateString()}</p>
-            <p style={{ margin: "2px 0", fontWeight: 500 }}>Total Pages: {p.pagesEntered}</p>
-            <ul style={{ margin: "4px 0 0 16px", padding: 0, listStyleType: "disc" }}>
-              {p.categories.map((c, cidx) => (
-                <li key={cidx} style={{ marginBottom: "2px", fontWeight: 500 }}>
-                  {c.categoryName}: {c.pages} pages
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))
-      ) : (
-        <p style={{ fontWeight: 500, color: "#475569" }}>No performance data yet.</p>
-      )}
+{employee.performance && employee.performance.length > 0 ? (
+  Object.values(
+    employee.performance.reduce((acc, p) => {
+      const dateKey = new Date(p.date).toLocaleDateString("en-GB"); // dd/mm/yyyy format
+      
+      if (!acc[dateKey]) {
+        acc[dateKey] = {
+          date: dateKey,
+          pagesEntered: 0,
+          categories: [],
+        };
+      }
+
+      // Add total pages
+      acc[dateKey].pagesEntered += p.pagesEntered;
+
+      // Merge categories
+      p.categories.forEach(c => {
+        const existing = acc[dateKey].categories.find(cat => cat.categoryName === c.categoryName);
+        if (existing) {
+          existing.pages += c.pages;
+        } else {
+          acc[dateKey].categories.push({ ...c });
+        }
+      });
+
+      return acc;
+    }, {})
+  )
+    .sort((a, b) => new Date(b.date.split("/").reverse().join("-")) - new Date(a.date.split("/").reverse().join("-"))) // sort by latest first
+    .map((p, idx) => (
+      <div
+        key={idx}
+        style={{
+          marginBottom: "12px",
+          padding: "12px",
+          background: "#e0f2fe",
+          borderRadius: "12px",
+          width: "100%",
+          textAlign: "left",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+        }}
+      >
+        <p style={{ margin: "2px 0", fontWeight: 600 }}>Date: {p.date}</p>
+        <p style={{ margin: "2px 0", fontWeight: 500 }}>
+          Total Pages: {p.pagesEntered}
+        </p>
+        <ul
+          style={{
+            margin: "4px 0 0 16px",
+            padding: 0,
+            listStyleType: "disc",
+          }}
+        >
+          {p.categories.map((c, cidx) => (
+            <li
+              key={cidx}
+              style={{ marginBottom: "2px", fontWeight: 500 }}
+            >
+              {c.categoryName}: {c.pages} pages
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))
+) : (
+  <p style={{ fontWeight: 500, color: "#475569" }}>No performance data yet.</p>
+)}
+
+
     </div>
   </div>
 
@@ -201,76 +246,91 @@ return (
     gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
     gap: "16px",
   }}>
-    {employees
-      .filter(e => e._id !== employee._id)
-      .sort((a, b) => {
-        // Sort by total pages entered (descending)
-        const aPages = a.performance?.reduce((sum, p) => sum + p.pagesEntered, 0) || 0;
-        const bPages = b.performance?.reduce((sum, p) => sum + p.pagesEntered, 0) || 0;
-        return bPages - aPages;
-      })
-      .map((emp) => (
-        <div key={emp._id} style={{
-          background: "#ffffff",
-          padding: "16px",
-          borderRadius: "12px",
-          boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
-          transition: "transform 0.2s, box-shadow 0.2s",
-          cursor: "pointer",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          height: "220px",
-          overflow: "scroll",
-          scrollbarWidth: "none",
+    {(() => {
+  // Step 1: Find global latest date across all employees
+  const allDates = employees.flatMap(e => e.performance?.map(p => p.date) || []);
+  const latestDate =
+    allDates.length > 0
+      ? new Date(Math.max(...allDates.map(d => new Date(d).getTime())))
+      : null;
 
-        }}
-        onMouseEnter={e => {
-          e.currentTarget.style.transform = "translateY(-6px)";
-          e.currentTarget.style.boxShadow = "0 10px 25px rgba(0,0,0,0.12)";
-        }}
-        onMouseLeave={e => {
-          e.currentTarget.style.transform = "translateY(0)";
-          e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.05)";
-        }}
-        >
-          {/* Employee Info */}
-          <div>
-            <div style={{ fontWeight: "600", marginBottom: "6px", color: "#111827" }}>{emp.name}</div>
-            <div style={{ marginBottom: "4px", fontSize: "14px", color: "#374151" }}>Role: {emp.role}</div>
-            <div style={{ marginBottom: "4px", fontSize: "14px", color: "#374151" }}>Dept: {emp.department}</div>
-            <div style={{ fontSize: "13px", color: "#6b7280", marginBottom: "4px" }}>
-              <div>Email: {emp.email}</div>
-              <div>Phone: {emp.phone}</div>
-            </div>
+  return employees
+    .filter(e => e._id !== employee._id)
+    .sort((a, b) => {
+      const getPagesForDate = (emp, date) => {
+        if (!date) return 0;
+        return emp.performance
+          ?.filter(p => new Date(p.date).toDateString() === date.toDateString())
+          .reduce((sum, p) => sum + p.pagesEntered, 0) || 0;
+      };
+
+      const aPages = getPagesForDate(a, latestDate);
+      const bPages = getPagesForDate(b, latestDate);
+
+      return bPages - aPages; // sort by latest date pages
+    })
+    .map((emp) => (
+      <div key={emp._id} style={{
+        background: "#ffffff",
+        padding: "16px",
+        borderRadius: "12px",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+        transition: "transform 0.2s, box-shadow 0.2s",
+        cursor: "pointer",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        height: "220px",
+        overflow: "scroll",
+        scrollbarWidth: "none",
+      }}
+      onMouseEnter={e => {
+        e.currentTarget.style.transform = "translateY(-6px)";
+        e.currentTarget.style.boxShadow = "0 10px 25px rgba(0,0,0,0.12)";
+      }}
+      onMouseLeave={e => {
+        e.currentTarget.style.transform = "translateY(0)";
+        e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.05)";
+      }}
+      >
+        {/* Employee Info */}
+        <div>
+          <div style={{ fontWeight: "600", marginBottom: "6px", color: "#111827" }}>{emp.name}</div>
+          <div style={{ marginBottom: "4px", fontSize: "14px", color: "#374151" }}>Role: {emp.role}</div>
+          <div style={{ marginBottom: "4px", fontSize: "14px", color: "#374151" }}>Dept: {emp.department}</div>
+          <div style={{ fontSize: "13px", color: "#6b7280", marginBottom: "4px" }}>
+            <div>Email: {emp.email}</div>
+            <div>Phone: {emp.phone}</div>
           </div>
+        </div>
 
-          {/* Performance Summary */}
-<div style={{ marginTop: "8px", fontSize: "13px", color: "#374151" }}>
-  {(() => {
-    // Group by date
-    const pagesByDate = {};
-    emp.performance?.forEach(p => {
-      const dateKey = new Date(p.date).toLocaleDateString();
-      if (!pagesByDate[dateKey]) {
-        pagesByDate[dateKey] = 0;
-      }
-      pagesByDate[dateKey] += p.pagesEntered;
-    });
+        {/* Performance Summary */}
+        <div style={{ marginTop: "0px", fontSize: "13px", color: "#374151" }}>
+          <hr />
+          {(() => {
+            const pagesByDate = {};
+            emp.performance?.forEach(p => {
+              const dateKey = new Date(p.date).toLocaleDateString();
+              if (!pagesByDate[dateKey]) {
+                pagesByDate[dateKey] = 0;
+              }
+              pagesByDate[dateKey] += p.pagesEntered;
+            });
 
-    // Convert to array to render
-    return Object.entries(pagesByDate).map(([date, totalPages], idx) => (
-      <div key={idx} style={{ marginBottom: "4px" }}>
-        <div>Date: {date}</div>
-        <div>Pages: {totalPages}</div>
+            return Object.entries(pagesByDate)
+              .sort((a, b) => new Date(b[0]) - new Date(a[0]))
+              .map(([date, totalPages], idx) => (
+                <div key={idx} style={{ marginBottom: "4px" }}>
+                  <div>Date: {date}</div>
+                  <div>Pages: {totalPages}</div>
+                </div>
+              ));
+          })()}
+        </div>
       </div>
     ));
-  })()}
-</div>
+})()}
 
-        </div>
-      ))
-    }
   </div>
 </div>
 
