@@ -9,6 +9,7 @@ import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { BASE_URL } from "../../config";
 
+
 const GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/";
 
 const API_KEY = process.env.REACT_APP_GEMINI_API_KEY;
